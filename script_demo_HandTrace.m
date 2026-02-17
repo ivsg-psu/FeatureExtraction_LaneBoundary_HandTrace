@@ -157,7 +157,7 @@ disp('Welcome to the demo code for the HandTrace library!')
 
 
 %% Section for Jaime to digitize test track
-
+figNum = 10001;
 titleString = sprintf('Section for Jaime to digitize Penn State test track');
 fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
 figure(figNum); clf;
@@ -217,12 +217,15 @@ end
 
 if exist(fileNameLaneBoundaries,'file')
 	load(fileNameLaneBoundaries,traceVariableName);
+	eval(sprintf('priorBoundaries = %s;',traceVariableName));
 else
-	boundariesReber = [];
+	priorBoundaries = [];
 end
 
-boundariesByHand = fcn_GetUserInputPath_getUserInputPath((boundariesReber),(figNum));
-eval(sprintf('%s = boundariesByHand',traceVariableName));
+
+
+boundariesByHand = fcn_GetUserInputPath_getUserInputPath((priorBoundaries),(figNum));
+eval(sprintf('%s = boundariesByHand;',traceVariableName));
 save(fileNameLaneBoundaries,traceVariableName);
 
 %% Functions follow
