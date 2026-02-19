@@ -183,24 +183,122 @@ if 1==1
     % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
     fileNameLaneBoundaries = fullfile(pwd,'Data','pavementBoundaries_LTITestTrack.mat');
 	traceVariableName = 'pavementBoundaries';
-	
+
 	% % Yellow
 	% traceVariableName = 'solidSingleYellowLaneMarkings';
+    figNumImg = 10006;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidSingleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidSingleYellowLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'solidDoubleYellowLaneMarkings';
+    figNumImg = 10007;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDoubleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDoubleYellowLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'dashedSingleYellowLaneMarkings';
+    figNumImg = 10008;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedSingleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedSingleYellowLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'dashedDoubleYellowLaneMarkings';
-	% traceVariableName = 'dashedSolidDoubleYellowLaneMarkings';
+    figNumImg = 10009;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedDoubleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedDoubleYellowLaneMarkings','Interpreter','none');
+    
 	% traceVariableName = 'solidDashedDoubleYellowLaneMarkings';
-	% 
-	% 
+    figNumImg = 10010;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDashedDoubleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDashedDoubleYellowLaneMarkings','Interpreter','none');
+
+	 
 	% % White
 	% traceVariableName = 'solidSingleWhiteLaneMarkings';
+    figNumImg = 10011;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidSingleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidSingleWhiteLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'solidDoubleWhiteLaneMarkings';
+    figNumImg = 10012;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDoubleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDoubleWhiteLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'dashedSingleWhiteLaneMarkings';
+    figNumImg = 10013;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedSingleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedSingleWhiteLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'shortDashedWhiteLaneMarkings';
+    figNumImg = 10014;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','shortDashedWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('shortDashedWhiteLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'dottedDashedWhiteLaneMarkings';
+    figNumImg = 10015;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dottedDashedWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dottedDashedWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'dashedDoubleWhiteLaneMarkings';
+    figNumImg = 10016;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedDoubleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedDoubleWhiteLaneMarkings','Interpreter','none');
+
+    % traceVariableName = 'solidDashedDoubleWhiteLaneMarkings';
+    figNumImg = 10017;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDashedDoubleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDashedDoubleWhiteLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'stopLineWhiteLaneMarkings';
+    figNumImg = 10018;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','stopLineWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('stopLineWhiteLaneMarkings','Interpreter','none');
+
 	% traceVariableName = 'crosswalkWhiteLaneMarkings';
+    figNumImg = 10019;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','crosswalkWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('crosswalkWhiteLaneMarkings','Interpreter','none');
+
 
 
 end
