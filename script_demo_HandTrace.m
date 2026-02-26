@@ -165,6 +165,260 @@ figure(figNum); clf;
 
 
 % For Reber
+if 1==1
+    % figNum = 10004;
+    % fcn_plotRoad_plotLL([],[],(figNum));
+    % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
+    % fileNameLaneBoundaries = fullfile(pwd,'Data','laneBoundaries_ReberParkingLot.mat');
+	% traceVariableName = 'boundariesReber';
+
+	% figNum = 10004;
+    % fcn_plotRoad_plotLL([],[],(figNum));
+    % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
+    % fileNameLaneBoundaries = fullfile(pwd,'Data','centerline_ReberParkingLot.mat');
+	% traceVariableName = 'centerlineReber';
+
+    figNum = 10004;
+    fcn_plotRoad_plotLL([],[],(figNum));
+    set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
+    fileNameLaneBoundaries = fullfile(pwd,'Data','parkingSpaces_ReberParkingLot.mat');
+	traceVariableName = 'parkingSpaces';
+end
+
+% TO DO 
+% - add pictures of each type of marking!
+% - make sure our lane marking list is complete (USA, EU, etc.)
+
+% For Test Track
+if 1==0
+    figNum = 10005;
+    fcn_plotRoad_plotLL([],[],(figNum));
+    % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
+    fileNameLaneBoundaries = fullfile(pwd,'Data','pavementBoundaries_LTITestTrack.mat');
+	traceVariableName = 'pavementBoundaries';
+
+	% % Yellow
+	% traceVariableName = 'solidSingleYellowLaneMarkings';
+    figNumImg = 10006;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidSingleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidSingleYellowLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'solidDoubleYellowLaneMarkings';
+    figNumImg = 10007;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDoubleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDoubleYellowLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'dashedSingleYellowLaneMarkings';
+    figNumImg = 10008;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedSingleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedSingleYellowLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'dashedDoubleYellowLaneMarkings';
+    figNumImg = 10009;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedDoubleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedDoubleYellowLaneMarkings','Interpreter','none');
+    
+	% traceVariableName = 'solidDashedDoubleYellowLaneMarkings';
+    figNumImg = 10010;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDashedDoubleYellowLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDashedDoubleYellowLaneMarkings','Interpreter','none');
+
+	 
+	% % White
+	% traceVariableName = 'solidSingleWhiteLaneMarkings';
+    figNumImg = 10011;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidSingleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidSingleWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'solidDoubleWhiteLaneMarkings';
+    figNumImg = 10012;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDoubleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDoubleWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'dashedSingleWhiteLaneMarkings';
+    figNumImg = 10013;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedSingleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedSingleWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'shortDashedWhiteLaneMarkings';
+    figNumImg = 10014;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','shortDashedWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('shortDashedWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'dottedDashedWhiteLaneMarkings';
+    figNumImg = 10015;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dottedDashedWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dottedDashedWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'dashedDoubleWhiteLaneMarkings';
+    figNumImg = 10016;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','dashedDoubleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('dashedDoubleWhiteLaneMarkings','Interpreter','none');
+
+    % traceVariableName = 'solidDashedDoubleWhiteLaneMarkings';
+    figNumImg = 10017;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','solidDashedDoubleWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('solidDashedDoubleWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'stopLineWhiteLaneMarkings';
+    figNumImg = 10018;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','stopLineWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('stopLineWhiteLaneMarkings','Interpreter','none');
+
+	% traceVariableName = 'crosswalkWhiteLaneMarkings';
+    figNumImg = 10019;
+    figure(figNumImg);                
+
+    I = imread(fullfile(pwd,'Images','crosswalkWhiteLaneMarkings.png'));
+    imshow(I); axis image off
+    title('crosswalkWhiteLaneMarkings','Interpreter','none');
+
+
+
+end
+
+% For I-99
+if 1==0
+    figNum = 10006;
+    fcn_plotRoad_plotLL([],[],(figNum));
+    set(gca,'MapCenter',[40.820145752792733 -77.894216100492017],'ZoomLevel',19.25);
+    fileNameLaneBoundaries = fullfile(pwd,'Data','laneBoundaries_Interstate99Toftrees.mat');
+end
+
+
+
+if exist(fileNameLaneBoundaries,'file')
+	load(fileNameLaneBoundaries,traceVariableName);
+	eval(sprintf('priorBoundaries = %s;',traceVariableName));
+else
+	priorBoundaries = [];
+end
+
+
+
+boundariesByHand = fcn_GetUserInputPath_getUserInputPath((priorBoundaries),(figNum));
+eval(sprintf('%s = boundariesByHand;',traceVariableName));
+save(fileNameLaneBoundaries,traceVariableName);
+
+
+%% Section to functionalize
+figNum = 10002;
+titleString = sprintf('Section for Jaime to digitize Penn State test track');
+fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
+figure(figNum); clf;
+
+'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20, 'SaveFileName', saveFileName,'LoadFileName', loadFileName, 'FlagMergeLoadIntoSave', flagMergeLoadIntoSave, 'MarkerColor',markerColor,'Marker'
+
+function opts = myPlotOptions(varargin)
+%MYPLOTOPTIONS Parse name-value pairs and validate names.
+% opts = myPlotOptions('Color','r','LineWidth',2)
+
+    % Define valid names and defaults (use canonical names)
+    validNames = {'Color','LineWidth','Marker','Visible'};
+    defaults   = {'b',       1.0,         'o',     true};
+
+    % Create struct of defaults
+    opts = cell2struct(defaults, validNames, 2);
+
+    % If no inputs, return defaults
+    if isempty(varargin)
+        return
+    end
+
+    % Validate varargin length
+    if mod(numel(varargin),2)~=0
+        error('Name-value inputs must come in pairs.');
+    end
+
+    % For quick lookup: lower-case valid names
+    validLower = lower(validNames);
+
+    % Process pairs
+    for k = 1:2:numel(varargin)
+        name = varargin{k};
+        value = varargin{k+1};
+
+        if ~ischar(name) && ~isstring(name)
+            error('Parameter names must be character vectors or strings.');
+        end
+        name = char(name);                 % convert to char
+        lname = lower(name);
+
+        % Try exact case-insensitive match
+        idx = find(strcmp(lname, validLower));
+
+        % If no exact match, try unique partial match
+        if isempty(idx)
+            matches = startsWith(validLower, lname);
+            if nnz(matches)==1
+                idx = find(matches);
+            elseif nnz(matches)>1
+                error('Ambiguous parameter name "%s".', name);
+            end
+        end
+
+        if isempty(idx)
+            error('Unknown parameter name "%s".', name);
+        end
+
+        % Assign into opts using canonical name
+        opts.(validNames{idx}) = value;
+    end
+end
+
+% Default options
+o = myPlotOptions();
+
+% Override some options (case-insensitive)
+o = myPlotOptions('color','r','LineWidth',2);
+
+% Partial unique name allowed ('mar' -> 'Marker')
+o = myPlotOptions('mar','x');
+
+% Unknown name raises an error
+o = myPlotOptions('Foo',10);  % error: Unknown parameter name "Foo".
+
+
+% For Reber
 if 1==0
     figNum = 10004;
     fcn_plotRoad_plotLL([],[],(figNum));
