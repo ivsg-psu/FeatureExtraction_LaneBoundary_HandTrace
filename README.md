@@ -324,6 +324,8 @@ A solid white transverse line marking the required stopping position at intersec
 <pre align="center">
   <img src=".\Images\stopLineWhiteLaneMarkings.png" alt="stopLineWhiteLaneMarkings picture" width="400" height="300">
   <figcaption>Fig.13 - Stop Line White Lane Mark.</figcaption>
+  <img src=".\Images\stopLineWhiteLaneMarkings2.png" alt="stopLineWhiteLaneMarkings2 picture" width="400" height="300">
+  <figcaption>Fig.14 - Stop Line White Lane Mark.</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 
@@ -335,7 +337,7 @@ White transverse or zebra markings indicating a designated pedestrian crossing a
 
 <pre align="center">
   <img src=".\Images\crosswalkWhiteLaneMarkings.png" alt="crosswalkWhiteLaneMarkings picture" width="400" height="300">
-  <figcaption>Fig.14 - Crosswalk White Lane Mark.</figcaption>
+  <figcaption>Fig.15 - Crosswalk White Lane Mark.</figcaption>
   <!--font size="-2">Photo by <a href="https://unsplash.com/ko/@samuelchenard?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Samuel Chenard</a> on <a href="https://unsplash.com/photos/Bdc8uzY9EPw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></font -->
 </pre>
 

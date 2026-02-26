@@ -182,8 +182,47 @@ if 1==1
     figNum = 10005;
     fcn_plotRoad_plotLL([],[],(figNum));
     % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
-    fileNameLaneBoundaries = fullfile(pwd,'Data','pavementBoundaries_LTITestTrack.mat');
-	traceVariableName = 'pavementBoundaries';
+
+    dataDir = fullfile(pwd,'Data');
+    if ~exist(dataDir,'dir'), mkdir(dataDir); end
+
+    % Trace marks saved in files. To modify just uncomment the line and run
+    % the section code
+    items = { 
+        %'pavementBoundaries_LTITestTrack.mat'              'pavementBoundaries'
+        %'laneMarkings_doubleYellow_position_LTITestTrack.mat'       'laneMarkings_doubleYellow_position'
+        %'laneMarkings_doubleYellow_marking_LTITestTrack.mat'      'laneMarkings_doubleYellow_marking'
+        %'laneMarkings_singleYellowDashed_LTITestTrack.mat' 'laneMarkings_singleYellowDashed'
+        %'laneMarkings_singleWhite_LTITestTrack.mat'        'laneMarkings_singleWhite'
+        %'parkingSpots_LTITestTrack.mat'                    'parkingSpots'
+        %'stopLines_LTITestTrack.mat'                       'stopLines'
+        %'obstacles_LTITestTrack.mat'                       'obstacles'
+        %'bridge_LTITestTrack.mat'                       'bridge'
+        
+    };
+
+    for k = 1:size(items,1)
+        fileNameLaneBoundaries = fullfile(dataDir, items{k,1});
+        traceVariableName      = items{k,2};
+
+        fprintf('\n--- Tracinng: %s ---\n', traceVariableName);
+        fprintf('File: %s\n', fileNameLaneBoundaries);
+
+        priorBoundaries = [];
+        if exist(fileNameLaneBoundaries,'file')
+            S = load(fileNameLaneBoundaries);
+            if isfield(S, traceVariableName)
+                priorBoundaries = S.(traceVariableName);
+            end
+        end
+
+        boundariesByHand = fcn_GetUserInputPath_getUserInputPath(priorBoundaries, figNum);
+
+        out = struct();
+        out.(traceVariableName) = boundariesByHand;
+        save(fileNameLaneBoundaries, '-struct', 'out');
+    end
+end
 
 	% % Yellow
 	% traceVariableName = 'solidSingleYellowLaneMarkings';
@@ -300,9 +339,6 @@ if 1==1
     imshow(I); axis image off
     title('crosswalkWhiteLaneMarkings','Interpreter','none');
 
-
-
-end
 
 % For I-99
 if 1==0
