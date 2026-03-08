@@ -156,6 +156,59 @@ end
 
 disp('Welcome to the demo code for the HandTrace library!')
 
+%% Load all categories
+categoryFiles = dir(fullfile(pwd,'Data','Categories_*.txt'));
+categoryData = cell(length(categoryFiles), 2);
+for ith_category = 1:length(categoryFiles)
+    % For each text file, read the file and ignore the first line. Each of
+    % the following lines is saved into a cell array to define the
+    % subcategories. 
+    thisFileName = categoryFiles(ith_category).name;
+    thisTextFile = fullfile(categoryFiles(ith_category).folder, thisFileName);
+
+    % Read all the lines of the file into an array of strings
+    categoryText = readlines(thisTextFile);
+
+    % Loop through the strings, identifying which are categories
+    flagIsCategory = false(size(categoryText,1),1);
+    Ncomments = 0;
+    Nempty = 0;
+    for ith_line = 1:size(categoryText,1)
+        thisLineOfText = char(categoryText(ith_line,:));
+        if isempty(thisLineOfText)
+            % Empty
+            Nempty = Nempty+1;
+        elseif strcmp(thisLineOfText(1,1),'%')
+            % Comment, skip it
+            Ncomments = Ncomments + 1;
+        elseif ~isempty(thisLineOfText)
+            if ~isvarname(thisLineOfText)
+                error('Subcategory encountered that is not a valid MATLAB variable name: %s',thisLineOfText);
+            end
+            flagIsCategory(ith_line,1) = true;
+        else
+            error('Unknown situation encountered?');
+        end
+    end
+
+    % Loop through the subcategories
+    subcategoryList = categoryText(flagIsCategory,:);
+    Nsubcategories = size(subcategoryList,1);
+    subcategories = cell(Nsubcategories,1);
+    for ith_subcategory = 1:Nsubcategories
+        thisCategoryText = char(subcategoryList(ith_subcategory,:));
+        subcategories{ith_subcategory,1} = thisCategoryText;
+    end
+
+    % Save the name
+    thisCategoryWithExtension = extractAfter(thisFileName,'Categories_');
+    thisCategoryName = thisCategoryWithExtension(1:end-4);
+    categoryData{ith_category,1} = thisCategoryName;
+    categoryData{ith_category,2} = subcategories;
+    
+
+end
+
 
 %% Section for Jaime to digitize test track
 figNum = 10001;
