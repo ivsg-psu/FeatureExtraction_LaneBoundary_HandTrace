@@ -1,0 +1,26 @@
+% This is a list of all the blue painted stripes. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PaintedStripesBlue_SingleSolid, [0 0 1], 5, 0
+PaintedStripesBlue_SingleDashed, [0 0 1], 5, 0
+PaintedStripesBlue_SingleDotted, [0 0 1], 5, 0
+PaintedStripesBlue_DoubleSolidLeftSide, [0 0 1], 5, 0
+PaintedStripesBlue_DoubleSolidRightSide, [0 0 1], 5, 0 
+PaintedStripesBlue_DoubleDashedLeftSide, [0 0 1], 5, 0
+PaintedStripesBlue_DoubleDashedRightSide, [0 0 1], 5, 0
+PaintedStripesBlue_SolidParkingMarkLeftAndRight, [0 0 1], 5, 0
+PaintedStripesBlue_SolidParkingMarkLeft, [0 0 1], 5, 0
+PaintedStripesBlue_SolidParkingMarkRight, [0 0 1], 5, 0
+PaintedStripesBlue_SolidParkingAisleCap, [0 0 1], 5, 0
+PaintedStripesBlue_SolidParkingHeadInBoundary, [0 0 1], 5, 0
+PaintedStripesBlue_ZigZag, [0 0 1], 5, 0
+PaintedStripesBlue_SolidHorizontal, [0 0 1], 5, 0
+PaintedStripesBlue_DashedHorizontal, [0 0 1], 5, 0
+PaintedStripesBlue_StripedLines, [0 0 1], 5, 0
+PaintedStripesBlue_SpeedBumpMarking, [0 0 1], 5, 0
+PaintedStripesBlue_SpeedHumpMarking, [0 0 1], 5, 0
+PaintedStripesBlue_BoxJunctionCrissCross, [0 0 1], 5, 0
+PaintedStripesBlue_TrafficIslandInfill, [0 0 1], 5, 0
+PaintedStripesBlue_Curb, [0 0 1], 5, 0
+PaintedStripesBlue_CartCorral, [0 0 1], 5, 0

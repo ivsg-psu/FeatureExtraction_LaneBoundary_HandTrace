@@ -1,5 +1,0 @@
-% This is a list of all the junction nodes. Nodes are a single point.
-% The category names should NOT contain any spaces
-entranceJunctionNodes
-exitJunctionNodes
-parkingStopNodes

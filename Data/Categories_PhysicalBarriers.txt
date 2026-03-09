@@ -1,0 +1,24 @@
+% This is a list of all the white painted symbols. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PhysicalBarriers_FrontWheelStops, 0.5*[1 1 0], 5, 0
+PhysicalBarriers_Curbs, 0.5*[1 0 0], 5, 0
+PhysicalBarriers_NearRoadObject, [1 0 0], 5, 0
+PhysicalBarriers_OverheadObject, [1 0 0], 5, 0
+PhysicalBarriers_EntranceGate, [1 0 0], 5, 0
+PhysicalBarriers_ExitGate, [1 0 0], 5, 0
+PhysicalBarriers_RaisedCrosswalk, [1 0 0], 5, 0
+PhysicalBarriers_TemporaryBollard, [1 0 0], 5, 0
+PhysicalBarriers_PermanentBollard, [1 0 0], 5, 0 
+PhysicalBarriers_LightPole, [1 0 0], 5, 0
+PhysicalBarriers_TelephonePole, [1 0 0], 5, 0
+PhysicalBarriers_Wall, [1 0 0], 5, 0
+PhysicalBarriers_Building, [1 0 0], 5, 0
+PhysicalBarriers_TensionCable, [1 0 0], 5, 0
+PhysicalBarriers_EntryKiosk, [1 0 0], 5, 0
+PhysicalBarriers_ExitKiosk, [1 0 0], 5, 0
+PhysicalBarriers_GarageDoor, [1 0 0], 5, 0
+PhysicalBarriers_PlasticVerticalPole, [1 0 0], 5, 0
+PhysicalBarriers_LowHeadroom, [1 0 0], 5, 0
+PhysicalBarriers_ChargingStation, [1 0 0], 5, 0

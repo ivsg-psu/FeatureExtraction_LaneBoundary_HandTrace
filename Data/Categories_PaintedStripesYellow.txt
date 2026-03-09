@@ -1,0 +1,26 @@
+% This is a list of all the yellow painted stripes. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PaintedStripesYellow_SingleSolid, [1 1 0], 5, 0
+PaintedStripesYellow_SingleDashed, [1 1 0], 5, 0
+PaintedStripesYellow_SingleDotted, [1 1 0], 5, 0
+PaintedStripesYellow_DoubleSolidLeftSide, [1 1 0], 5, 0
+PaintedStripesYellow_DoubleSolidRightSide, [1 1 0], 5, 0 
+PaintedStripesYellow_DoubleDashedLeftSide, [1 1 0], 5, 0
+PaintedStripesYellow_DoubleDashedRightSide, [1 1 0], 5, 0
+PaintedStripesYellow_SolidParkingMarkLeftAndRight, [1 1 0], 5, 0
+PaintedStripesYellow_SolidParkingMarkLeft, [1 1 0], 5, 0
+PaintedStripesYellow_SolidParkingMarkRight, [1 1 0], 5, 0
+PaintedStripesYellow_SolidParkingAisleCap, [1 1 0], 5, 0
+PaintedStripesYellow_SolidParkingHeadInBoundary, [1 1 0], 5, 0
+PaintedStripesYellow_ZigZag, [1 1 0], 5, 0
+PaintedStripesYellow_SolidHorizontal, [1 1 0], 5, 0
+PaintedStripesYellow_DashedHorizontal, [1 1 0], 5, 0
+PaintedStripesYellow_StripedLines, [1 1 0], 5, 0
+PaintedStripesYellow_SpeedBumpMarking, [1 1 0], 5, 0
+PaintedStripesYellow_SpeedHumpMarking, [1 1 0], 5, 0
+PaintedStripesYellow_BoxJunctionCrissCross, [1 1 0], 5, 0
+PaintedStripesYellow_TrafficIslandInfill, [1 1 0], 5, 0
+PaintedStripesYellow_Curb, [1 1 0], 5, 0
+PaintedStripesYellow_CartCorral, [1 1 0], 5, 0
