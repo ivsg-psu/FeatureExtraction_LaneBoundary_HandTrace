@@ -26,4 +26,6 @@ Zones_ExitTicketKiosk, 0.5*[1 1 1], 5, 0
 Zones_EntryGate, 0.5*[1 1 1], 5, 0
 Zones_ExitGate, 0.5*[1 1 1], 5, 0
 Zones_EVChargingParking, 0.5*[1 1 1], 5, 0
-
+Zones_TrashAcessArea, 0.5*[1 1 1], 5, 0
+Zones_BusStop, 0.5*[1 1 1], 5, 0
+Zones_BusLane, 0.5*[1 1 1], 5, 0

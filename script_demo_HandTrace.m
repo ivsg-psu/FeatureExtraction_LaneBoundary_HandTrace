@@ -25,11 +25,8 @@
 %
 % 2026_02_17 by Sean Brennan, sbrennan@psu.edu
 %   % * Main code needs to be updated
-%   % * Update templates
-%   % * Need to functionalize the template
-%   % * Need to copy the getInput into a local version perhaps, allowing
-%   white, yellow, dashed lines
-%   % * Need to allow different outputs
+%   % * Need to finish traceEachCategory
+%   % * Need way to compare maps
 
 
 %% Make sure we are running out of root directory

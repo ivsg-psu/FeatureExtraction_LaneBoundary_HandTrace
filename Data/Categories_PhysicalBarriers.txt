@@ -22,3 +22,30 @@ PhysicalBarriers_GarageDoor, [1 0 0], 5, 0
 PhysicalBarriers_PlasticVerticalPole, [1 0 0], 5, 0
 PhysicalBarriers_LowHeadroom, [1 0 0], 5, 0
 PhysicalBarriers_ChargingStation, [1 0 0], 5, 0
+PhysicalBarriers_FireHydrant, [1 0 0], 5, 0
+PhysicalBarriers_GuardRail, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_ChainFence, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_ParkingMeter, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_ParkingPaymentBox, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_MailBox, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_Dumpster, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_TrashCan, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_GarageDoorAccessPanel, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_BusStopKiosk, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_LowProfileDivider, 0.8*[1 1 1], 5, 0
+
+
+
+PhysicalBarriers_GasLineGround, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_WaterLineGround, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_ElectricalLineGround, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_GasLineOverhead, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_WaterLineOverhead, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_ElectricalLineOverhead, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_GasBox, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_WaterBox, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_ElectricalBox, 0.8*[1 1 1], 5, 0
+
+
+PhysicalBarriers_TreeTrunk, 0.8*[1 1 1], 5, 0
+PhysicalBarriers_Vegetation, 0.8*[0 1 0], 5, 0
