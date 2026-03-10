@@ -3,5 +3,5 @@
 % subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
 % The subcategory names should NOT contain any spaces
 Nodes_Parking, [1 1 0], 30, 0
-Nodes_Entrance, [0 1 0], 20, 1
-Nodes_Exit, [1 0 0], 10, 1
+Nodes_Entrance, [0 1 0], 20, 0
+Nodes_Exit, [1 0 0], 10, 0

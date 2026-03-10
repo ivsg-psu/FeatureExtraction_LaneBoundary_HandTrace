@@ -1,0 +1,11 @@
+% This is a list of all the regions.
+% Regions are large areas encompassing many features that define boundaries
+% where other objects generally reside.
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+Regions_PavedSurface, 0.5*[1 1 1], 5, 0
+Regions_UnPavedDrivableSurface, 0.5*[1 1 1], 5, 0
+Regions_UnPavedShoulder, 0.5*[1 1 1], 5, 0
+Regions_ParkingLot, 0.5*[1 1 1], 5, 0
+Regions_Intersection, 0.5*[1 1 1], 5, 0

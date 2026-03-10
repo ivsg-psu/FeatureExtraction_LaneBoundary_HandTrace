@@ -213,14 +213,14 @@ if 1==0
 	categoryData = [];
 	userFilledCategoryData = fcn_HandTrace_traceEachCategory((categoryData),(figNum));
 
-	% sgtitle(titleString, 'Interpreter','none');
-
-	% Check variable types
-	assert(isnumeric(userFilledCategoryData));
-
-	% Check variable sizes
-	assert(size(userFilledCategoryData,1)>=1);
-	assert(size(userFilledCategoryData,2)==2);
+	% % sgtitle(titleString, 'Interpreter','none');
+	% 
+	% % Check variable types
+	% assert(isnumeric(userFilledCategoryData));
+	% 
+	% % Check variable sizes
+	% assert(size(userFilledCategoryData,1)>=1);
+	% assert(size(userFilledCategoryData,2)==2);
 
 	% Check variable values
 	% User defined

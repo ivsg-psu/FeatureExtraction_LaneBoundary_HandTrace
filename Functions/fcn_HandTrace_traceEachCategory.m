@@ -212,7 +212,7 @@ for ith_category = 1:size(categoryData,1)
         subCategorySize       = thisSubcategories{jth_subcategory,3};
         subCategoryIsRequired = thisSubcategories{jth_subcategory,4};
         XYZdata               = thisSubcategories{jth_subcategory,5};
-        h_subcategory = fcn_INTERNAL_createNamedPlot(flag_isGeoPlot, subCategoryName, subCategoryColor, subCategorySize, subCategoryIsRequired, XYZdata);
+        h_subcategory = fcn_INTERNAL_createNamedSubplot(flag_isGeoPlot, subCategoryName, subCategoryColor, subCategorySize, subCategoryIsRequired, XYZdata);
         cellArrayOfSubplotHandles{jth_subcategory,1} = h_subcategory;
     end
 
@@ -552,6 +552,7 @@ for ith_category = 1:length(categoryFiles)
     Nparts = 4;
 
     thisSubcategories = cell(Nsubcategories,Nparts);
+	flagCheckIsVarName = 0;
     for ith_subcategory = 1:Nsubcategories
         thisCategoryText = char(subcategoryList(ith_subcategory,:));
 
@@ -568,7 +569,7 @@ for ith_category = 1:length(categoryFiles)
 
         % Grab name
         subCategoryName = cellArrayOfPartsNoLeadTrailSpaces{1};
-        if ~isvarname(subCategoryName)
+        if flagCheckIsVarName && ~isvarname(subCategoryName)
             error('Subcategory name encountered in file:\n\t%s \nthat is not a valid MATLAB variable name:\n\t%s',thisTextFile, subCategoryName);
         end
 
@@ -637,14 +638,38 @@ end
 end % Ends fcn_INTERNAL_createNamedPatch
 
 %% fcn_INTERNAL_createNamedPlot
-function h_subcategory = fcn_INTERNAL_createNamedPlot(flag_isGeoPlot, subCategoryName, subCategoryColor, subCategorySize, subCategoryIsRequired, XYZdata)
+function h_subcategory = fcn_INTERNAL_createNamedSubplot(flag_isGeoPlot, subCategoryName, subCategoryColor, subCategorySize, subCategoryIsRequired, XYZdata)
 
-if contains(subCategoryName,'Node')
+plotStyle = 'line';
+if contains(subCategoryName,{'nodes'},'IgnoreCase',true)
+	plotStyle = 'point';
     markerStyle = '.';
     MarkerSize = subCategorySize;
     LineWidth = 3;
+elseif contains(subCategoryName,{'paths'},'IgnoreCase',true)
+	plotStyle = 'arrow';
+    markerStyle = '-';
+    MarkerSize = subCategorySize;
+    LineWidth = 3;
+elseif contains(subCategoryName,{'stripes'},'IgnoreCase',true)
+	plotStyle = 'line';
+    markerStyle = '-';
+    MarkerSize = subCategorySize;
+    LineWidth = 3;
+elseif contains(subCategoryName,{'barriers','symbols','regions','surfacefeatures','zones'},'IgnoreCase',true)
+	plotStyle = 'patch';
+    markerStyle = '-';
+    MarkerSize = subCategorySize;
+    LineWidth = 3;
+elseif contains(subCategoryName,{'signs'},'IgnoreCase',true)
+	plotStyle = 'directionalSegment';
+    markerStyle = '-';
+    MarkerSize = subCategorySize;
+    LineWidth = 3;
 else
-    markerStyle = '.-';
+	warning('A subcategory was encountered that is not yet classified: %s\n Defaulting to a line style.',subCategoryName);
+	plotStyle = 'line';
+	markerStyle = '.-';
     MarkerSize = 10;
     LineWidth = subCategorySize;
 end
@@ -656,9 +681,18 @@ if subCategoryIsRequired
     Visible = 'on';
 end
 
-if flag_isGeoPlot
-    h_subcategory = geoplot(XYZdata(:,1),XYZdata(:,2), markerStyle,'Color',subCategoryColor,'MarkerSize',MarkerSize,'LineWidth',LineWidth,'DisplayName',subCategoryName,'HandleVisibility',HandleVisibility,'Visible',Visible);
-else
-    h_subcategory = plot(XYZdata(:,1),XYZdata(:,2), markerStyle, 'Color',subCategoryColor,'MarkerSize',MarkerSize,'LineWidth',LineWidth,'DisplayName',subCategoryName,'HandleVisibility',HandleVisibility,'Visible',Visible);
+if contains(plotStyle,{'point','line','arrow','directionalSegment'},'IgnoreCase',true)
+	if flag_isGeoPlot
+		h_subcategory = geoplot(XYZdata(:,1),XYZdata(:,2), markerStyle,'Color',subCategoryColor,'MarkerSize',MarkerSize,'LineWidth',LineWidth,'DisplayName',cat(2,'    ',subCategoryName),'HandleVisibility',HandleVisibility,'Visible',Visible);
+	else
+		h_subcategory = plot(XYZdata(:,1),XYZdata(:,2), markerStyle, 'Color',subCategoryColor,'MarkerSize',MarkerSize,'LineWidth',LineWidth,'DisplayName',cat(2,'    ',subCategoryName),'HandleVisibility',HandleVisibility,'Visible',Visible);
+	end
+elseif contains(plotStyle,{'patch'},'IgnoreCase',true)
+	if flag_isGeoPlot
+		laneShape = geopolyshape(nan, nan);
+		h_subcategory = geoplot(laneShape,'FaceColor',subCategoryColor,'DisplayName',cat(2,'    ',subCategoryName),'HandleVisibility',HandleVisibility,'Visible',Visible);
+	else
+		h_subcategory = patch('Xdata',nan, 'YData',nan,'FaceColor',subCategoryColor,'DisplayName',cat(2,'    ',subCategoryName),'HandleVisibility',HandleVisibility,'Visible',Visible);
+	end
 end
 end % Ends fcn_INTERNAL_createNamedPlot

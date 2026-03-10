@@ -7,7 +7,10 @@ PaintedSymbolsWhite_YieldTriangeSolid, [1 1 1], 5, 0
 PaintedSymbolsWhite_YieldTriangeOutline, [1 1 1], 5, 0
 PaintedSymbolsWhite_RailRoadXingX, [1 1 1], 5, 0
 PaintedSymbolsWhite_RailRoadXingR, [1 1 1], 5, 0
-PaintedSymbolsWhite_BicycleIcon, [1 1 1], 5, 0
+PaintedSymbolsWhite_BicycleIconRidingToRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_BicycleIconRidingToLeft, [1 1 1], 5, 0
+PaintedSymbolsWhite_PedestrianIconWalkingToRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_PedestrianIconWalkingToLeft, [1 1 1], 5, 0
 PaintedSymbolsWhite_ArrowRight, [1 1 1], 5, 0
 PaintedSymbolsWhite_ArrowLeft, [1 1 1], 5, 0
 PaintedSymbolsWhite_ArrowStright, [1 1 1], 5, 0 

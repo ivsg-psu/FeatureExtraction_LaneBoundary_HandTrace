@@ -24,3 +24,5 @@ PaintedStripesBlue_BoxJunctionCrissCross, [0 0 1], 5, 0
 PaintedStripesBlue_TrafficIslandInfill, [0 0 1], 5, 0
 PaintedStripesBlue_Curb, [0 0 1], 5, 0
 PaintedStripesBlue_CartCorral, [0 0 1], 5, 0
+PaintedStripesBlue_NoParking, [0 0 1], 5, 0
+PaintedStripesBlue_HandicappedParking, [0 0 1], 5, 0

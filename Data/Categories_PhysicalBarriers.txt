@@ -1,4 +1,4 @@
-% This is a list of all the white painted symbols. 
+% This is a list of all the physical barriers (patches). 
 % Format:
 % subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
 % The subcategory names should NOT contain any spaces
