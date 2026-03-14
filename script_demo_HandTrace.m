@@ -161,7 +161,7 @@ figure(figNum); clf;
 
 
 % For Reber
-if 1==1
+if 1==0
     % figNum = 10004;
     % fcn_plotRoad_plotLL([],[],(figNum));
     % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
@@ -320,6 +320,13 @@ if 1==0
     fileNameLaneBoundaries = fullfile(pwd,'Data','laneBoundaries_Interstate99Toftrees.mat');
 end
 
+% For PSU to Pittsburgh (westbound)
+if 1==0
+    figNum = 10006;
+    fcn_plotRoad_plotLL([],[],(figNum));
+    set(gca,'MapCenter',[40.8182 -77.9344],'ZoomLevel',17);
+    fileNameLaneBoundaries = fullfile(pwd,'Data','laneBoundaries_PSU2Pittsburgh.mat');
+end
 
 
 if exist(fileNameLaneBoundaries,'file')
