@@ -47,7 +47,8 @@ function userFilledCategoryData = fcn_HandTrace_traceEachCategory(varargin)
 
 % TO-DO:
 % - 2026_03_08 by Sean Brennan, sbrennan@psu.edu
-%   % - Add items here
+%   % - Fix the bug where the individual category items get turned "on"
+%   %   % when the entire category is turned "off"
 
 
 %% Debugging and Input checks
@@ -185,7 +186,7 @@ if isprop(ax,'LatitudeAxis') && isprop(ax,'LongitudeAxis')
 end
 
 
-h_legend = legend('Interpreter','none','Location','northeast');
+h_legend = legend('Interpreter','none','Location','northeastoutside');
 
 
 % Create the "exit" patch
