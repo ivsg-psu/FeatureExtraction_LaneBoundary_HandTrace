@@ -44,9 +44,14 @@ function userFilledCategoryData = fcn_HandTrace_traceEachCategory(varargin)
 % 2026_03_08 by Sean Brennan, sbrennan@psu.edu
 % - wrote the code originally using fcn_GetUserInputPath_getUserInputPath
 %   % as a starter
+%
+% - 2026_03_17 by Sean Brennan, sbrennan@psu.edu
+%   % - Fixed the bug where the individual category items get turned "on"
+%   %   % when the entire category is turned "off"
+
 
 % TO-DO:
-% - 2026_03_08 by Sean Brennan, sbrennan@psu.edu
+% - 2026_03_17 by Sean Brennan, sbrennan@psu.edu
 %   % - Fix the bug where the individual category items get turned "on"
 %   %   % when the entire category is turned "off"
 
@@ -198,7 +203,11 @@ colorOrderThisAxis = colororder(ax);
 Ncolors = size(colorOrderThisAxis,1);
 cellArrayOfPlotHandles = cell(size(categoryData,1),2);
 allCategoryNames = cell(size(categoryData,1),1);
-for ith_category = 1:size(categoryData,1)
+
+Ncategories = size(categoryData,1);
+
+flagsCategoryIsExpanded = false(Ncategories,1);
+for ith_category = 1:Ncategories
     thisCategoryName = categoryData{ith_category,1};
     allCategoryNames{ith_category,1} = thisCategoryName;
     colorToUse = mod(ith_category-1,Ncolors)+1;
@@ -207,7 +216,9 @@ for ith_category = 1:size(categoryData,1)
 
     thisSubcategories = categoryData{ith_category,2};
     cellArrayOfSubplotHandles = cell(size(thisSubcategories,1),1);
-    for jth_subcategory = 1:size(thisSubcategories,1)
+	Nsubcategories = size(thisSubcategories,1);
+	allSubCategoryNames = cell(Nsubcategories,1);
+    for jth_subcategory = 1:Nsubcategories
         subCategoryName       = thisSubcategories{jth_subcategory,1};
         subCategoryColor      = thisSubcategories{jth_subcategory,2};
         subCategorySize       = thisSubcategories{jth_subcategory,3};
@@ -215,12 +226,19 @@ for ith_category = 1:size(categoryData,1)
         XYZdata               = thisSubcategories{jth_subcategory,5};
         h_subcategory = fcn_INTERNAL_createNamedSubplot(flag_isGeoPlot, subCategoryName, subCategoryColor, subCategorySize, subCategoryIsRequired, XYZdata);
         cellArrayOfSubplotHandles{jth_subcategory,1} = h_subcategory;
+		allSubCategoryNames{jth_subcategory} = subCategoryName;
     end
 
     cellArrayOfPlotHandles{ith_category,2} = cellArrayOfSubplotHandles;
+	cellArrayOfPlotHandles{ith_category,3} = allSubCategoryNames; 
+
+	% Save whether the subplots are visibile
+	cellArrayOfPlotHandles{ith_category,4} = false(Nsubcategories,1);
 
 end
-
+userData.cellArrayOfPlotHandles = cellArrayOfPlotHandles;
+userData.flagsCategoryIsExpanded = flagsCategoryIsExpanded;
+set(gcf,'UserData',userData);
 
 % Set ItemHitFcn
 h_legend.ItemHitFcn = @(src,event) legendItemClicked(src,event);
@@ -229,7 +247,7 @@ h_legend.ItemHitFcn = @(src,event) legendItemClicked(src,event);
 set(h_fig, ...
     'WindowKeyPressFcn', @onKey);
 
-title({'Select which categories to view.'});
+title({'Select which categories to view/edit.'});
 
 
 uiwait(figNum);    % block until uiresume or figure closed
@@ -242,6 +260,10 @@ end
         s.legendClicked = true;
         setappdata(figNum,'HoldPanState',s);
 
+		tempUserData = get(gcf,'UserData');
+		tempArrayOfPlotHandles = tempUserData.cellArrayOfPlotHandles;
+		tempFlagsCategoryIsExpanded = tempUserData.flagsCategoryIsExpanded;
+
         % event.Peer      -> chart object associated with clicked legend item
         % event.Region    -> 'icon' or 'label'
         % event.SelectionType -> 'normal','extend','open','alt'
@@ -251,7 +273,7 @@ end
         peerDisplayName = h_PeerStruct.DisplayName;
 
         % For debugging
-        if 1==0
+        if 1==1
             fprintf(1,'Region: %s, SelectionType: %s, Name: %s \n', event.Region, event.SelectionType, peerDisplayName);
         end
 
@@ -266,21 +288,56 @@ end
             uiresume(figNum);
         elseif any(strcmp(allCategoryNames,peerDisplayName))
             categoryHitIndex = find(strcmp(allCategoryNames,peerDisplayName),1);
-            thisSubCategoryHandles = cellArrayOfPlotHandles{categoryHitIndex,2};
-            tempSubcategories = categoryData{categoryHitIndex,2};
-            for jth_tempSubcategory = 1:size(thisSubCategoryHandles,1)
-                thisHandle = thisSubCategoryHandles{jth_tempSubcategory,1};
-                if ~tempSubcategories{jth_tempSubcategory,4}
-                    thisHandle.Visible = toggle(thisHandle.Visible);
-                    thisHandle.HandleVisibility = toggle(thisHandle.HandleVisibility);
-                end
-            end
+			if ~tempFlagsCategoryIsExpanded(categoryHitIndex)
+
+				thisSubCategoryHandles = tempArrayOfPlotHandles{categoryHitIndex,2};
+				tempSubcategories = categoryData{categoryHitIndex,2};
+				tempIsVisible = tempArrayOfPlotHandles{categoryHitIndex,4};
+
+				for jth_tempSubcategory = 1:size(thisSubCategoryHandles,1)
+					thisHandle = thisSubCategoryHandles{jth_tempSubcategory,1};
+					if ~tempSubcategories{jth_tempSubcategory,4}
+						if tempIsVisible(jth_tempSubcategory)
+							thisHandle.Visible = 'on';
+						else
+							thisHandle.Visible = 'off';
+						end							
+						thisHandle.HandleVisibility = 'on';
+					end
+				end
+			else			
+				thisSubCategoryHandles = tempArrayOfPlotHandles{categoryHitIndex,2};
+				tempSubcategories = categoryData{categoryHitIndex,2};
+				for jth_tempSubcategory = 1:size(thisSubCategoryHandles,1)
+					thisHandle = thisSubCategoryHandles{jth_tempSubcategory,1};
+					if ~tempSubcategories{jth_tempSubcategory,4}
+						thisHandle.Visible = 'off';
+						thisHandle.HandleVisibility = 'off';
+					end
+				end
+
+			end
+			tempFlagsCategoryIsExpanded(categoryHitIndex) = ~tempFlagsCategoryIsExpanded(categoryHitIndex);
+
         elseif isprop(h_Peer,'Visible') || isfield(h_Peer,'Visible')
             h_Peer.Visible = toggle(h_Peer.Visible);   % toggle visibility
+
+			thisClick = strtrim(h_Peer.DisplayName);
+			categoryName = extractBefore(thisClick,'_');
+			categoryHitIndex = find(strcmp(allCategoryNames,categoryName),1);
+
+			subcategoryNames = tempArrayOfPlotHandles{categoryHitIndex,3};
+			subcategoryHitIndex = find(strcmp(subcategoryNames,thisClick),1);
+			tempArrayOfPlotHandles{categoryHitIndex,4}(subcategoryHitIndex,1) = ...
+				~tempArrayOfPlotHandles{categoryHitIndex,4}(subcategoryHitIndex,1);
+
         end
 
+		tempUserData.cellArrayOfPlotHandles = tempArrayOfPlotHandles;
+		tempUserData.flagsCategoryIsExpanded = tempFlagsCategoryIsExpanded;
+		set(gcf,'UserData',tempUserData);
 
-    end
+	end % Ends function for legendItemClicked
 
     function v = toggle(prev)
         if strcmp(prev,'on')
@@ -298,6 +355,9 @@ end
         % end
 
         switch keyPress
+			case 'escape'   % finish on escape
+                uiresume(figNum);
+
             case 'return'     % finish on Enter
                 uiresume(figNum);
 
@@ -638,7 +698,7 @@ else
 end
 end % Ends fcn_INTERNAL_createNamedPatch
 
-%% fcn_INTERNAL_createNamedPlot
+%% fcn_INTERNAL_createNamedSubplot
 function h_subcategory = fcn_INTERNAL_createNamedSubplot(flag_isGeoPlot, subCategoryName, subCategoryColor, subCategorySize, subCategoryIsRequired, XYZdata)
 
 plotStyle = 'line';
@@ -696,4 +756,6 @@ elseif contains(plotStyle,{'patch'},'IgnoreCase',true)
 		h_subcategory = patch('Xdata',nan, 'YData',nan,'FaceColor',subCategoryColor,'DisplayName',cat(2,'    ',subCategoryName),'HandleVisibility',HandleVisibility,'Visible',Visible);
 	end
 end
-end % Ends fcn_INTERNAL_createNamedPlot
+tempUserData.flagIsVisible = true;
+set(h_subcategory,'UserData',tempUserData);
+end % Ends fcn_INTERNAL_createNamedSubplot
