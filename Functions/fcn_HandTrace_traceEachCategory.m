@@ -48,7 +48,7 @@ function userFilledCategoryData = fcn_HandTrace_traceEachCategory(varargin)
 % - 2026_03_17 by Sean Brennan, sbrennan@psu.edu
 %   % - Fixed the bug where the individual category items get turned "on"
 %   %   % when the entire category is turned "off"
-
+%   % - Added active trace label when only one value is selected
 
 % TO-DO:
 % - 2026_03_17 by Sean Brennan, sbrennan@psu.edu
@@ -237,6 +237,7 @@ for ith_category = 1:Ncategories
 
 end
 userData.cellArrayOfPlotHandles = cellArrayOfPlotHandles;
+userData.currentlyActive = [];
 userData.flagsCategoryIsExpanded = flagsCategoryIsExpanded;
 set(gcf,'UserData',userData);
 
@@ -263,6 +264,7 @@ end
 		tempUserData = get(gcf,'UserData');
 		tempArrayOfPlotHandles = tempUserData.cellArrayOfPlotHandles;
 		tempFlagsCategoryIsExpanded = tempUserData.flagsCategoryIsExpanded;
+		tempCurrentlyActive = tempUserData.currentlyActive;
 
         % event.Peer      -> chart object associated with clicked legend item
         % event.Region    -> 'icon' or 'label'
@@ -276,6 +278,8 @@ end
         if 1==1
             fprintf(1,'Region: %s, SelectionType: %s, Name: %s \n', event.Region, event.SelectionType, peerDisplayName);
         end
+
+		tempIsVisible = 0; % Default value
 
         if strcmp(peerDisplayName,'Click Here To Exit')
             % set(h_fig, ...
@@ -305,6 +309,7 @@ end
 						thisHandle.HandleVisibility = 'on';
 					end
 				end
+				
 			else			
 				thisSubCategoryHandles = tempArrayOfPlotHandles{categoryHitIndex,2};
 				tempSubcategories = categoryData{categoryHitIndex,2};
@@ -315,7 +320,7 @@ end
 						thisHandle.HandleVisibility = 'off';
 					end
 				end
-
+				tempCurrentlyActive = [];
 			end
 			tempFlagsCategoryIsExpanded(categoryHitIndex) = ~tempFlagsCategoryIsExpanded(categoryHitIndex);
 
@@ -331,8 +336,26 @@ end
 			tempArrayOfPlotHandles{categoryHitIndex,4}(subcategoryHitIndex,1) = ...
 				~tempArrayOfPlotHandles{categoryHitIndex,4}(subcategoryHitIndex,1);
 
+			tempIsVisible = tempArrayOfPlotHandles{categoryHitIndex,4};
         end
 
+		% Is there only one selection active? If so, tell user they can
+		% edit
+		if sum(tempIsVisible)==1
+			subcategoryIndexActive = find(tempIsVisible,1);
+			subcategoryNames = tempArrayOfPlotHandles{categoryHitIndex,3};
+			tempCurrentlyActive = subcategoryNames{subcategoryIndexActive};
+		else
+			tempCurrentlyActive = [];
+		end
+
+		if isempty(tempCurrentlyActive)
+			title('Select one trace to activate editing for that trace.');
+		else
+			title(sprintf('Active trace: %s. Hit enter to edit this trace.',tempCurrentlyActive),'Interpreter','none');
+		end
+
+		tempUserData.currentlyActive = tempCurrentlyActive;
 		tempUserData.cellArrayOfPlotHandles = tempArrayOfPlotHandles;
 		tempUserData.flagsCategoryIsExpanded = tempFlagsCategoryIsExpanded;
 		set(gcf,'UserData',tempUserData);
@@ -359,7 +382,37 @@ end
                 uiresume(figNum);
 
             case 'return'     % finish on Enter
-                uiresume(figNum);
+				tempUserData = get(gcf,'UserData');
+				tempArrayOfPlotHandles = tempUserData.cellArrayOfPlotHandles;
+				tempCurrentlyActive = tempUserData.currentlyActive;
+				
+				if ~isempty(tempCurrentlyActive)
+					categoryName = extractBefore(tempCurrentlyActive,'_');
+					categoryHitIndex = find(strcmp(allCategoryNames,categoryName),1);
+
+					subcategoryNames = tempArrayOfPlotHandles{categoryHitIndex,3};
+					subcategoryHitIndex = find(strcmp(subcategoryNames,tempCurrentlyActive),1);
+					thisSubCategoryHandles = tempArrayOfPlotHandles{categoryHitIndex,2};
+					thisHandle = thisSubCategoryHandles{subcategoryHitIndex,1};
+
+					if flag_isGeoPlot
+						XData = get(thisHandle,'XData');
+						YData = get(thisHandle,'YData');
+						dataToModify = [XData' YData'];
+						newData = fcn_GetUserInputPath_getUserInputPath(dataToModify);
+						set(thisHandle,'Xdata',newData(:,1)');
+						set(thisHandle,'Ydata',newData(:,2)');
+					else
+						XData = get(thisHandle,'XData');
+						YData = get(thisHandle,'YData');
+						dataToModify = [XData' YData'];
+						newData = fcn_GetUserInputPath_getUserInputPath(dataToModify);
+						set(thisHandle,'Xdata',newData(:,1)');
+						set(thisHandle,'Ydata',newData(:,2)');
+					end
+					
+
+				end
 
                 % disp('Points collected:');
                 % disp(pts);
@@ -659,7 +712,7 @@ for ith_category = 1:length(categoryFiles)
         thisSubcategories{ith_subcategory,2} = subCategoryColor;
         thisSubcategories{ith_subcategory,3} = subCategorySize;
         thisSubcategories{ith_subcategory,4} = subCategoryIsRequired;
-        thisSubcategories{ith_subcategory,5} = [rand rand; rand rand];
+        thisSubcategories{ith_subcategory,5} = rand(3,2);
     end
 
     % Save the name
