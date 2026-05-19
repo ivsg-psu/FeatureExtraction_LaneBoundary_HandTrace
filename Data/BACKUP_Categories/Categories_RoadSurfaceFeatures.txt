@@ -1,0 +1,33 @@
+% This is a list of all the road surface features.
+% Road surface features are aspects of the pavement that affect vehicle
+% motion (speed bumps and humps), vehicle stopping distances (concrete
+% versus asphault), bicycle/motorcycle navigation (drain grates), 
+% vehicle vibration (rumble strips, potholes), and
+% vehicle suspension (raised crosswalks, dips, ramps)
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+RoadSurfaceFeatures_Asphault, 0.7*[1 1 1], 5, 0
+RoadSurfaceFeatures_Concrete, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_Unpaved, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_SpeedBumps, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_SpeedHumps, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_SpeedHills, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RaisedPedestrianCrosswalks, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RaisedEntryKiosks, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RaisedExitKiosks, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_Dips, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_LargePotholes, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_MetalGratesBarsTransverseToRoad, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_MetalGratesBarsAlignedWithRoad, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_MetalGratesHash, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_StormDrains, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_Manholes, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RampIntoCurbs, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RumblestripsShoulder, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RumblestripsLaneBoundary, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_BridgeSeams, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_RailRoadBars, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_MetalPlates, 0.5*[1 1 1], 5, 0
+RoadSurfaceFeatures_Reflectors, 0.5*[1 1 1], 5, 0
+

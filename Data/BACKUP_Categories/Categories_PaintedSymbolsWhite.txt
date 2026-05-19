@@ -1,0 +1,32 @@
+% This is a list of all the white painted symbols. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PaintedSymbolsWhite_HorizontalSolidStopLine, [1 1 1], 5, 0
+PaintedSymbolsWhite_YieldTriangeSolid, [1 1 1], 5, 0
+PaintedSymbolsWhite_YieldTriangeOutline, [1 1 1], 5, 0
+PaintedSymbolsWhite_RailRoadXingX, [1 1 1], 5, 0
+PaintedSymbolsWhite_RailRoadXingR, [1 1 1], 5, 0
+PaintedSymbolsWhite_BicycleIconRidingToRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_BicycleIconRidingToLeft, [1 1 1], 5, 0
+PaintedSymbolsWhite_PedestrianIconWalkingToRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_PedestrianIconWalkingToLeft, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowLeft, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowStright, [1 1 1], 5, 0 
+PaintedSymbolsWhite_ArrowStraightAndRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowStraightAndLeft, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowLeftAndRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowSTraightAndLeftAndRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowSlantRight, [1 1 1], 5, 0
+PaintedSymbolsWhite_ArrowSlantLeft, [1 1 1], 5, 0
+PaintedSymbolsWhite_CrossWalkHash, [1 1 1], 5, 0
+PaintedSymbolsWhite_DiamondHOV, [1 1 1], 5, 0
+PaintedSymbolsWhite_StopLetterS, [1 1 1], 5, 0
+PaintedSymbolsWhite_StopLetterT, [1 1 1], 5, 0
+PaintedSymbolsWhite_StopLetterO, [1 1 1], 5, 0
+PaintedSymbolsWhite_StopLetterP, [1 1 1], 5, 0
+PaintedSymbolsWhite_OnlyLetterO, [1 1 1], 5, 0
+PaintedSymbolsWhite_OnlyLetterN, [1 1 1], 5, 0
+PaintedSymbolsWhite_OnlyLetterL, [1 1 1], 5, 0
+PaintedSymbolsWhite_OnlyLetterY, [1 1 1], 5, 0

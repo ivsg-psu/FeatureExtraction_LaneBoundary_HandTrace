@@ -1,3 +1,4 @@
+
 %% 
 %% Introduction to and Purpose of the Code
 % This is the explanation of the code that can be found by running
@@ -19,7 +20,9 @@
 % 
 % 2026_02_17 by Sean Brennan, sbrennan@psu.edu and Jaime Rodriguez, jrodriguezs.5@alumni.unav.es
 % - Started the repo
-
+% 
+% 2026_04_21 by Sean Brennan, sbrennan@psu.edu
+% - Small updates to repo
 
 % TO-DO:
 %
@@ -27,7 +30,10 @@
 %   % * Main code needs to be updated
 %   % * Need to finish traceEachCategory
 %   % * Need way to compare maps
-
+%
+% 2026_04_21 by Sean Brennan, sbrennan@psu.edu
+% - add pictures of each type of marking!
+% - make sure our lane marking list is complete (USA, EU, etc.)
 
 %% Make sure we are running out of root directory
 st = dbstack; 
@@ -161,7 +167,7 @@ figure(figNum); clf;
 
 
 % For Reber
-if 1==0
+if 1==1
     % figNum = 10004;
     % fcn_plotRoad_plotLL([],[],(figNum));
     % set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
@@ -181,9 +187,6 @@ if 1==0
 	traceVariableName = 'parkingSpaces';
 end
 
-% TO DO 
-% - add pictures of each type of marking!
-% - make sure our lane marking list is complete (USA, EU, etc.)
 
 % For Test Track
 if 1==0

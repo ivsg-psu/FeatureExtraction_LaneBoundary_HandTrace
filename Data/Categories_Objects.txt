@@ -1,0 +1,6 @@
+% This is a list of all the physical barriers (patches). 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0, isRoot0orisAABB1orIsPatch2orisLine3
+% The subcategory names should NOT contain any spaces
+Objects, 0.5*[1 1 0], 5, 0, 0
+Objects_PhysicalBarriers, 0.5*[1 1 0], 5, 0, 0

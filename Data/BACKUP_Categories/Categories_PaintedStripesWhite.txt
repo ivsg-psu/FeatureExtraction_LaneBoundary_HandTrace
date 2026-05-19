@@ -1,0 +1,28 @@
+% This is a list of all the white painted stripes. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PaintedStripesWhite_SingleSolid, [1 1 1], 5, 0
+PaintedStripesWhite_SingleDashed, [1 1 1], 5, 0
+PaintedStripesWhite_SingleDotted, [1 1 1], 5, 0
+PaintedStripesWhite_DoubleSolidLeftSide, [1 1 1], 5, 0
+PaintedStripesWhite_DoubleSolidRightSide, [1 1 1], 5, 0 
+PaintedStripesWhite_DoubleDashedLeftSide, [1 1 1], 5, 0
+PaintedStripesWhite_DoubleDashedRightSide, [1 1 1], 5, 0
+PaintedStripesWhite_SolidParkingMarkLeftAndRight, [1 1 1], 5, 0
+PaintedStripesWhite_SolidParkingMarkLeft, [1 1 1], 5, 0
+PaintedStripesWhite_SolidParkingMarkRight, [1 1 1], 5, 0
+PaintedStripesWhite_SolidParkingAisleCap, [1 1 1], 5, 0
+PaintedStripesWhite_SolidParkingHeadInBoundary, [1 1 1], 5, 0
+PaintedStripesWhite_ZigZag, [1 1 1], 5, 0
+PaintedStripesWhite_SolidHorizontal, [1 1 1], 5, 0
+PaintedStripesWhite_DashedHorizontal, [1 1 1], 5, 0
+PaintedStripesWhite_StripedLines, [1 1 1], 5, 0
+PaintedStripesWhite_SpeedBumpMarking, [1 1 1], 5, 0
+PaintedStripesWhite_SpeedHumpMarking, [1 1 1], 5, 0
+PaintedStripesWhite_BoxJunctionCrissCross, [1 1 1], 5, 0
+PaintedStripesWhite_TrafficIslandInfill, [1 1 1], 5, 0
+PaintedStripesWhite_ThickChannelizingLine, [1 1 1], 5, 0
+PaintedStripesWhite_NeutralChevronLine, [1 1 1], 5, 0
+PaintedStripesWhite_Curb, [1 1 1], 5, 0
+PaintedStripesWhite_CartCorral, [1 1 1], 5, 0

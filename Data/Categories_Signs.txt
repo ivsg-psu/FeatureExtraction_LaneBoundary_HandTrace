@@ -1,0 +1,8 @@
+% This is a list of all parking signs 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0, isRoot0orisAABB1orIsPatch2orisLine3
+% The subcategory names should NOT contain any spaces
+Signs, 0.5*[1 1 1], 5, 0, 0
+Signs_Parking, 0.5*[1 1 1], 5, 0, 0
+Signs_Roadway, 0.5*[1 1 1], 5, 0, 0
+

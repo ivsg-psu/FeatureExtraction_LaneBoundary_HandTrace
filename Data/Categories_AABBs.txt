@@ -1,0 +1,6 @@
+% This is a list of all the AABBs. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0, isRoot0orisAABB1orIsPatch2orisLine3
+% The subcategory names should NOT contain any spaces
+AABBs, 0.5*[1 1 1], 5, 0, 0
+AABBs_LocalRegion, 0.5*[1 1 1], 5, 0, 1

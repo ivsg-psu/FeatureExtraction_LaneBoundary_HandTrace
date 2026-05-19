@@ -1,0 +1,31 @@
+% This is a list of all the zones.
+% Zones are small areas with special rules (parking, loading, handicapped,
+% etc.)
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+Zones_NoParking, [0 0 1], 5, 0
+Zones_ParkingRestricted, 0.5*[1 1 1], 5, 0
+Zones_PedistrianCrosswalk, 0.5*[1 1 1], 5, 0
+Zones_HandicappedParking, 0.5*[1 1 1], 5, 0
+Zones_ShortTermParking, 0.5*[1 1 1], 5, 0
+Zones_DrivableBicycleLane, 0.5*[1 1 1], 5, 0
+Zones_NonDrivableBicycleLane, 0.5*[1 1 1], 5, 0
+Zones_DrivableSidewalk, 0.5*[1 1 1], 5, 0
+Zones_NonDrivableSidewalk, 0.5*[1 1 1], 5, 0
+Zones_LoadingAndUnLoading, 0.5*[1 1 1], 5, 0
+Zones_FireLane, 0.5*[1 1 1], 5, 0
+Zones_FireHydrant, 0.5*[1 1 1], 5, 0
+Zones_Driveway, 0.5*[1 1 1], 5, 0
+Zones_GarageEntrance, 0.5*[1 1 1], 5, 0
+Zones_GarageExit, 0.5*[1 1 1], 5, 0
+Zones_CartCorral, 0.5*[1 1 1], 5, 0
+Zones_VegetationCollisionHazard, 0.5*[1 1 1], 5, 0
+Zones_EntryTicketKiosk, 0.5*[1 1 1], 5, 0
+Zones_ExitTicketKiosk, 0.5*[1 1 1], 5, 0
+Zones_EntryGate, 0.5*[1 1 1], 5, 0
+Zones_ExitGate, 0.5*[1 1 1], 5, 0
+Zones_EVChargingParking, 0.5*[1 1 1], 5, 0
+Zones_TrashAcessArea, 0.5*[1 1 1], 5, 0
+Zones_BusStop, 0.5*[1 1 1], 5, 0
+Zones_BusLane, 0.5*[1 1 1], 5, 0

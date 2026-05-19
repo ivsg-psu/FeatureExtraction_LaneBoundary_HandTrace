@@ -1,0 +1,26 @@
+% This is a list of all the red painted stripes. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PaintedStripesRed_SingleSolid, [1 0 0], 5, 0
+PaintedStripesRed_SingleDashed, [1 0 0], 5, 0
+PaintedStripesRed_SingleDotted, [1 0 0], 5, 0
+PaintedStripesRed_DoubleSolidLeftSide, [1 0 0], 5, 0
+PaintedStripesRed_DoubleSolidRightSide, [1 0 0], 5, 0 
+PaintedStripesRed_DoubleDashedLeftSide, [1 0 0], 5, 0
+PaintedStripesRed_DoubleDashedRightSide, [1 0 0], 5, 0
+PaintedStripesRed_SolidParkingMarkLeftAndRight, [1 0 0], 5, 0
+PaintedStripesRed_SolidParkingMarkLeft, [1 0 0], 5, 0
+PaintedStripesRed_SolidParkingMarkRight, [1 0 0], 5, 0
+PaintedStripesRed_SolidParkingAisleCap, [1 0 0], 5, 0
+PaintedStripesRed_SolidParkingHeadInBoundary, [1 0 0], 5, 0
+PaintedStripesRed_ZigZag, [1 0 0], 5, 0
+PaintedStripesRed_SolidHorizontal, [1 0 0], 5, 0
+PaintedStripesRed_DashedHorizontal, [1 0 0], 5, 0
+PaintedStripesRed_StripedLines, [1 0 0], 5, 0
+PaintedStripesRed_SpeedBumpMarking, [1 0 0], 5, 0
+PaintedStripesRed_SpeedHumpMarking, [1 0 0], 5, 0
+PaintedStripesRed_BoxJunctionCrissCross, [1 0 0], 5, 0
+PaintedStripesRed_TrafficIslandInfill, [1 0 0], 5, 0
+PaintedStripesRed_Curb, [1 0 0], 5, 0
+PaintedStripesRed_CartCorral, [1 0 0], 5, 0

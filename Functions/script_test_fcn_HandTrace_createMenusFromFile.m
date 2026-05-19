@@ -1,15 +1,15 @@
-% script_test_fcn_HandTrace_traceEachCategory
+% script_test_fcn_HandTrace_createMenusFromFile
 % This is a script to exercise the function:
-% fcn_HandTrace_traceEachCategory.m
+% fcn_HandTrace_createMenusFromFile.m
 %
-% This script was written on 2026_03_08 by S. Brennan
+% This script was written on 2026_05_15 by S. Brennan
 % Questions or comments? sbrennan@psu.edu
 
 % REVISION HISTORY:
 %
-% As: script_test_fcn_HandTrace_traceEachCategory
+% As: script_test_fcn_HandTrace_createMenusFromFile
 %
-% 2026_03_08 by Sean Brennan, sbrennan@psu.edu
+% 2026_05_15 by Sean Brennan, sbrennan@psu.edu
 % - wrote the code originally using fcn_GetUserInputPath_getUserInputPath
 %   % as a starter
 %
@@ -17,7 +17,7 @@
 
 % TO-DO:
 %
-% 2026_02_12 by Sean Brennan, sbrennan@psu.edu
+% 2026_05_15 by Sean Brennan, sbrennan@psu.edu
 % - (fill in items here)
 
 
@@ -42,289 +42,69 @@ close all
 close all;
 fprintf(1,'Figure: 1XXXXXX: DEMO cases - all are interactive so commented out\n');
 
+
+
 %% DEMO case: basic example
 figNum = 10001;
 titleString = sprintf('DEMO case: basic example ');
 fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
 figure(figNum); clf;
 
-categoryData = [];
 
-% Load image of Reber parking lot
-fcn_plotRoad_plotLL([],[],(figNum));
+% Create a temporary file with menu definitions
+txt = [
+    "Signs_Green_Go"
+	"Waypoints"
+    "Segments"
+    "Paints_Red"
+	"Paints"
+];
 
-bottomLeftCornerLLCoordinates = [40.7936 -77.8645];
-angleIncrement = 0.0002;
+fname = "menu_def.txt";
+writelines(txt, fname);
 
-% IDEA 1: put the coordinates in the file name
-%
-% FORMAT of file name: bottom-left corner of the region, with '.'
-% replaced by 'p' for "point" and '-' replaced by 'm' for "minus".
-% The name is: NAME_latitude_longitude_angleIncrement
-% handTracedCategories_40p7936_m77p8645_0p0002.mat
+% Create a figure and build menus from the file
+f = figure('Name', 'Menu Example');
+fcn_HandTrace_createMenusFromFile(fname, f);
 
-% IDEA 2: save the AABB information inside the file
-%
-% FORMAT of the file name: "handTracedCategories_(description).mat"
-% Example: handTracedCategories_PSUReberParkingLot1.mat
-% Inside the file, save the coordinates as a variable
-
-
-% Check if the data file exists?
-handTracedCategoriesFileName = 'PSUReberParkingLot1.mat';
-handTracedCategoriesFileAndPath = fullfile(pwd,'Data',handTracedCategoriesFileName);
+% Clean up (optional)
+delete(fname)
 
 
-if exist(handTracedCategoriesFileAndPath,'file')
-	% Do smart load, one variable at a time with warnings
+%% DEMO case: basic example
+figNum = 10002;
+titleString = sprintf('DEMO case: example for Hand Trace');
+fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
+figure(figNum); clf;
 
-	matlabFileObject = matfile(pamap_lidar_limitsFile);        % returns matlab.io.MatFile object
-	vars = who(matlabFileObject);             % variable names in the file (no full load)
-	expectedVariables = {'LatLonLimits', 'CurrentZoom'};
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, required (anything else is NOT required), patch or segment or points
 
-	for ith_expectedVariable = 1:length(expectedVariables)
-		thisExpectedVariable = expectedVariables{ith_expectedVariable};
-		% Read a variable only if it exists
-		if ismember(thisExpectedVariable, vars)
-			% loads only that variable/part
-			commandString = sprintf('%s = matlabFileObject.(thisExpectedVariable);',thisExpectedVariable);
-			eval(commandString);
-		else
-			warning('Variable %s not found in the limits file: %s.', thisExpectedVariable, pamap_lidar_limitsFile);
-		end
-	end
-else
-	% MATLAB saves AABB limits as [LatMin LatMax LonMin LonMax]
-	LatLonLimits = [...
-		bottomLeftCornerLLCoordinates(1,1), ...
-		bottomLeftCornerLLCoordinates(1,1) + angleIncrement, ...
-		bottomLeftCornerLLCoordinates(1,2), ...
-		bottomLeftCornerLLCoordinates(1,2) + angleIncrement];
-	CurrentZoom = 19.5;
+% Create a temporary file with menu definitions
+txt = [
+	"AABBs, 0.5*[1 1 1], 5, required, patch" % Axis-aligned bounding box - these define the area that is being marked
+	"AABBs_LocalRegions, 0.5*[1 1 1], 5, notRequired, patch"  % Local region is the area in which definitions are valid within this file
+	"AABBs_LocalRegions_Test, 0.5*[1 1 1], 5, notRequired, patch"  % Local region is the area in which definitions are valid within this file
+	"Regions"
+	"Networks"
+	"Objects"
+	"Stripes"
+	"Surfaces"
+	"Zones"
+	"Signs"
+];
 
-	% Initialize the category data as empty
-	categoryData = [];
+fname = "menu_def.txt";
+writelines(txt, fname);
 
-	set(gca,'MapCenter',bottomLeftCornerLLCoordinates+angleIncrement*0.5*[1 1],'ZoomLevel',CurrentZoom);
-end
+% Create a figure and build menus from the file
+f = figure('Name', 'Menu Example');
+fcn_HandTrace_createMenusFromFile(fname, f);
 
-% Fill in the data
-userFilledCategoryData = fcn_HandTrace_traceEachCategory((categoryData),(figNum));
-
-% sgtitle(titleString, 'Interpreter','none');
-
-% Check variable types
-assert(iscell(userFilledCategoryData));
-
-% % Check variable sizes
-% assert(size(userFilledCategoryData,1)>=1);
-% assert(size(userFilledCategoryData,2)==2);
-
-% Check variable values
-% User defined
-
-% % Make sure plot opened up
-% assert(isequal(get(gcf,'Number'),figNum));
+% Clean up (optional)
+delete(fname)
 
 
-
-if 1==0
-	%% DEMO case: hello world
-	figNum = 10003;
-	titleString = sprintf('DEMO case: hello world');
-	fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
-	figure(figNum); clf;
-
-	categoryData = [
-		0.1743    0.8815
-		0.1752    0.7835
-		NaN       NaN
-		0.1734    0.8346
-		0.2113    0.8346
-		NaN       NaN
-		0.2095    0.8758
-		0.2149    0.7878
-		NaN       NaN
-		0.2374    0.8772
-		0.2392    0.7878
-		NaN       NaN
-		0.2401    0.7878
-		0.2716    0.7878
-		NaN       NaN
-		0.2383    0.8275
-		0.2707    0.8289
-		NaN       NaN
-		0.2401    0.8715
-		0.2698    0.8729
-		NaN       NaN
-		0.2914    0.8715
-		0.2941    0.7864
-		0.3356    0.7835
-		NaN       NaN
-		0.3536    0.8616
-		0.3599    0.7920
-		0.3959    0.7935
-		NaN       NaN
-		0.4419    0.8758
-		0.4221    0.8573
-		0.4167    0.8289
-		0.4194    0.8105
-		0.4329    0.7935
-		0.4500    0.7906
-		0.4608    0.7991
-		0.4626    0.8261
-		0.4590    0.8616
-		0.4536    0.8744
-		0.4455    0.8758
-		NaN       NaN
-		0.1761    0.7083
-		0.2032    0.6118
-		0.2248    0.6529
-		0.2455    0.6259
-		0.2689    0.7154
-		NaN       NaN
-		0.3122    0.6941
-		0.2986    0.6728
-		0.2941    0.6245
-		0.3050    0.6004
-		0.3365    0.6103
-		0.3491    0.6316
-		0.3464    0.6756
-		0.3266    0.6955
-		0.3131    0.6955
-		NaN       NaN
-		0.3752    0.7040
-		0.3806    0.6047
-		NaN       NaN
-		0.3752    0.6998
-		0.4032    0.6969
-		0.4113    0.6728
-		0.3788    0.6558
-		0.4221    0.6174
-		NaN       NaN
-		0.4419    0.7083
-		0.4500    0.6132
-		0.4959    0.6118
-		NaN       NaN
-		0.5077    0.7182
-		0.5194    0.6146
-		0.5392    0.6203
-		0.5527    0.6259
-		0.5581    0.6444
-		0.5590    0.6643
-		0.5545    0.6813
-		0.5509    0.6983
-		0.5437    0.7182
-		0.5401    0.7225
-		0.5302    0.7253
-		0.5194    0.7253
-		0.5104    0.7253
-		NaN       NaN
-		];
-	userFilledCategoryData = fcn_HandTrace_traceEachCategory((categoryData),(figNum));
-
-	% sgtitle(titleString, 'Interpreter','none');
-
-	% Check variable types
-	assert(isnumeric(userFilledCategoryData));
-
-	% Check variable sizes
-	assert(size(userFilledCategoryData,1)>=1);
-	assert(size(userFilledCategoryData,2)==2);
-
-	% Check variable values
-	% User defined
-
-	% % Make sure plot opened up
-	% assert(isequal(get(gcf,'Number'),figNum));
-
-
-	%% DEMO case: testing with geoplot
-	figNum = 10004;
-	titleString = sprintf('DEMO case: testing with geoplot');
-	fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
-	figure(figNum); clf;
-
-	fcn_plotRoad_plotLL([],[],(figNum));
-	set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
-
-	categoryData = [];
-	userFilledCategoryData = fcn_HandTrace_traceEachCategory((categoryData),(figNum));
-
-	% % sgtitle(titleString, 'Interpreter','none');
-	%
-	% % Check variable types
-	% assert(isnumeric(userFilledCategoryData));
-	%
-	% % Check variable sizes
-	% assert(size(userFilledCategoryData,1)>=1);
-	% assert(size(userFilledCategoryData,2)==2);
-
-	% Check variable values
-	% User defined
-
-	% % Make sure plot opened up
-	% assert(isequal(get(gcf,'Number'),figNum));
-
-	%% DEMO case: testing with geoplot with previous data
-	figNum = 10005;
-	titleString = sprintf('DEMO case: testing with geoplot with previous data');
-	fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
-	figure(figNum); clf;
-
-	LLAdata = [
-		40.380301927069773 -79.884128796856004
-		40.378814453783740 -79.886003667041678
-		40.378669382578792 -79.886219585568057
-		40.378433386792231 -79.886604483810743
-		40.378353699381059 -79.886780169071329
-		40.378136091096778 -79.887313930397440
-		40.377928699370855 -79.887838973249472
-		40.377836751959194 -79.888072325433768
-		40.377773410098470 -79.888193024839410
-		40.377716198258547 -79.888294948781976
-		40.377520043009973 -79.888603402818688
-		40.377489393700806 -79.888643635953898
-		40.377448524718410 -79.888706667865804
-		40.376353312922461 -79.887279732669882
-		40.376189846948471 -79.886737926448873
-		40.377142030673902 -79.885364635433248
-		40.376524951424727 -79.884527767603231
-		40.377505743164747 -79.883186643311959
-		40.378204549077431 -79.883926938612660
-		40.379258892424218 -79.883980584788716
-		40.380010826978442 -79.883723056518534
-		40.380301927069773 -79.884128796856004];
-
-	plotFormat.Marker = 'none';
-	plotFormat.MarkerSize = 10;
-	plotFormat.LineStyle = '-';
-	plotFormat.LineWidth = 3;
-	plotFormat.Color = [1 0 0];
-
-
-	fcn_plotRoad_plotLL([],[],figNum);
-	set(gca,'MapCenter',[40.378155494697360 -79.884093253372299],'ZoomLevel',17);
-
-	categoryData = LLAdata;
-	userFilledCategoryData = fcn_HandTrace_traceEachCategory((categoryData),(figNum));
-
-	% sgtitle(titleString, 'Interpreter','none');
-
-	% Check variable types
-	assert(isnumeric(userFilledCategoryData));
-
-	% Check variable sizes
-	assert(size(userFilledCategoryData,1)>=1);
-	assert(size(userFilledCategoryData,2)==2);
-
-	% Check variable values
-	% User defined
-	%
-	% % Make sure plot opened up
-	% assert(isequal(get(gcf,'Number'),figNum));
-
-end
 
 %% Test cases start here. These are very simple, usually trivial
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

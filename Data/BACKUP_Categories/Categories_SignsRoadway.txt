@@ -1,4 +1,4 @@
-% This is a list of all parking signs 
+% This is a list of all highway signs 
 % Format:
 % subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
 % The subcategory names should NOT contain any spaces
@@ -20,7 +20,7 @@ SignsRoadway_SpeedLimitsRadarEnforced, [1 1 1], 5, 0
 SignsRoadway_SpeedLimitsCheckedBy, [1 1 1], 5, 0
 SignsRoadway_SpeedLimitsCustom, [1 1 1], 5, 0
 
-% Stop signs can be 18-inch (trails/bikeways), 24-inch (parking lots), 30-inch (standard), 36-inch (multi-lane or high-speed roads), 48-inch (oversized for high-speed, dangerous, or low visibility)
+% Signs can be 18-inch (trails/bikeways), 24-inch (parking lots), 30-inch (standard), 36-inch (multi-lane or high-speed roads), 48-inch (oversized for high-speed, dangerous, or low visibility)
 SignsRoadway_Stop (R1-1), [1 0 0], 5, 0
 SignsRoadway_StopAllWay (R1-3), [1 0 0], 5, 0
 SignsRoadway_StopMultiWay, [1 0 0], 5, 0

@@ -1,0 +1,10 @@
+AABBs, 0.5*[1 1 1], 5, required, patch
+AABBs_LocalRegions, 0.5*[1 1 1], 5, notRequired, patch
+AABBs_LocalRegions_Test, 0.5*[1 1 1], 5, notRequired, patch
+Regions
+Networks
+Objects
+Stripes
+Surfaces
+Zones
+Signs

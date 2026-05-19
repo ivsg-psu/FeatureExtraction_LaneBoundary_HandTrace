@@ -1,0 +1,26 @@
+% This is a list of all the green painted stripes. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+PaintedStripesGreen_SingleSolid, [0 1 0], 5, 0
+PaintedStripesGreen_SingleDashed, [0 1 0], 5, 0
+PaintedStripesGreen_SingleDotted, [0 1 0], 5, 0
+PaintedStripesGreen_DoubleSolidLeftSide, [0 1 0], 5, 0
+PaintedStripesGreen_DoubleSolidRightSide, [0 1 0], 5, 0 
+PaintedStripesGreen_DoubleDashedLeftSide, [0 1 0], 5, 0
+PaintedStripesGreen_DoubleDashedRightSide, [0 1 0], 5, 0
+PaintedStripesGreen_SolidParkingMarkLeftAndRight, [0 1 0], 5, 0
+PaintedStripesGreen_SolidParkingMarkLeft, [0 1 0], 5, 0
+PaintedStripesGreen_SolidParkingMarkRight, [0 1 0], 5, 0
+PaintedStripesGreen_SolidParkingAisleCap, [0 1 0], 5, 0
+PaintedStripesGreen_SolidParkingHeadInBoundary, [0 1 0], 5, 0
+PaintedStripesGreen_ZigZag, [0 1 0], 5, 0
+PaintedStripesGreen_SolidHorizontal, [0 1 0], 5, 0
+PaintedStripesGreen_DashedHorizontal, [0 1 0], 5, 0
+PaintedStripesGreen_StripedLines, [0 1 0], 5, 0
+PaintedStripesGreen_SpeedBumpMarking, [0 1 0], 5, 0
+PaintedStripesGreen_SpeedHumpMarking, [0 1 0], 5, 0
+PaintedStripesGreen_BoxJunctionCrissCross, [0 1 0], 5, 0
+PaintedStripesGreen_TrafficIslandInfill, [0 1 0], 5, 0
+PaintedStripesGreen_Curb, [0 1 0], 5, 0
+PaintedStripesGreen_CartCorral, [0 1 0], 5, 0

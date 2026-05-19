@@ -168,10 +168,44 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %% Do we need to fill in categoryData?
+categoryStructure = fcn_INTERNAL_fillCategoryStructureFromFiles;
 
 if isempty(categoryData)
     categoryData = fcn_INTERNAL_fillCategoryDataFromFiles;
+
+	% OLD FORMAT:
+	%   16×2 cell array
+	% 
+    % {'01Regions'           }    { 5×5 cell}
+    % {'ImpliedStripes'      }    {22×5 cell}
+    % {'NetworkLinkagePaths' }    { 7×5 cell}
+    % {'NodesOfNetwork'      }    { 3×5 cell}
+    % {'PaintedStripesBlue'  }    {24×5 cell}
+    % {'PaintedStripesGreen' }    {22×5 cell}
+    % {'PaintedStripesRed'   }    {22×5 cell}
+    % {'PaintedStripesWhite' }    {24×5 cell}
+    % {'PaintedStripesYellow'}    {22×5 cell}
+    % {'PaintedSymbolsWhite' }    {28×5 cell}
+    % {'PhysicalBarriers'    }    {42×5 cell}
+    % {'RoadSurfaceFeatures' }    {23×5 cell}
+    % {'RoadwaySigns'        }    {29×5 cell}
+    % {'SignsParking'        }    {29×5 cell}
+    % {'SignsRoadway'        }    {29×5 cell}
+    % {'Zones'               }    {25×5 cell}
+	%
+	% categoryData{1,2}
+	%
+	% ans =
+	%
+	%   5×5 cell array
+	%
+	%     {'Regions_PavedSurface'          }    {[0.5000 0.5000 0.5000]}    {[5]}    {[0]}    {3×2 double}
+	%     {'Regions_UnPavedDrivableSurface'}    {[0.5000 0.5000 0.5000]}    {[5]}    {[0]}    {3×2 double}
+	%     {'Regions_UnPavedShoulder'       }    {[0.5000 0.5000 0.5000]}    {[5]}    {[0]}    {3×2 double}
+	%     {'Regions_ParkingLot'            }    {[0.5000 0.5000 0.5000]}    {[5]}    {[0]}    {3×2 double}
+	%     {'Regions_Intersection'          }    {[0.5000 0.5000 0.5000]}    {[5]}    {[0]}    {3×2 double}
 end
 
 %% Fill in outputs
@@ -627,6 +661,127 @@ else
 end
 end
 
+%% fcn_INTERNAL_fillCategoryStructureFromFiles
+function categoryStructure = fcn_INTERNAL_fillCategoryStructureFromFiles
+prefixToStructure = 'Categories_';
+
+categoryFiles = dir(fullfile(pwd,'Data',cat(2,prefixToStructure,'*.txt')));
+Nfiles = length(categoryFiles);
+
+% Extract the "good" subcategories
+flagFileWasUsed = false(Nfiles,1);
+categoryNameStrings = cell(Nfiles,1);
+for ith_category = 1:length(categoryFiles)
+	thisFileName = categoryFiles(ith_category).name;
+	subCategoryString = extractAfter(thisFileName,prefixToStructure);
+end
+
+
+categoryOrderingFile = fullfile(pwd,'Data',cat(2,prefixToStructure,'aaaPreferredOrder.txt'));
+preferredOrdering = readlines(categoryOrderingFile);
+
+categoryStructure = struct; % Initialize an empty structure
+
+if ~isempty(preferredOrdering)
+	out = resortBySortedList(sorted, arbitrary);
+
+end
+for ith_category = 1:length(categoryFiles)
+    % For each text file, read the file and ignore the first line. Each of
+    % the following lines is saved into a cell array to define the
+    % subcategories.
+    thisFileName = categoryFiles(ith_category).name;
+    thisTextFile = fullfile(categoryFiles(ith_category).folder, thisFileName);
+
+    % Read all the lines of the file into an array of strings
+    categoryText = readlines(thisTextFile);
+
+    % Loop through the strings, identifying which are categories
+    flagIsCategory = false(size(categoryText,1),1);
+    Ncomments = 0;
+    Nempty = 0;
+    for ith_line = 1:size(categoryText,1)
+        thisLineOfText = char(categoryText(ith_line,:));
+        if isempty(thisLineOfText)
+            % Empty
+            Nempty = Nempty+1;
+        elseif strcmp(thisLineOfText(1,1),'%')
+            % Comment, skip it
+            Ncomments = Ncomments + 1;
+        elseif ~isempty(thisLineOfText)
+            flagIsCategory(ith_line,1) = true;
+        else
+            error('Unknown situation encountered?');
+        end
+    end
+
+    % Loop through the subcategories
+    subcategoryList = categoryText(flagIsCategory,:);
+    Nsubcategories = size(subcategoryList,1);
+    Nparts = 4;
+
+    thisSubcategories = cell(Nsubcategories,Nparts);
+	flagCheckIsVarName = 0;
+    for ith_subcategory = 1:Nsubcategories
+        thisCategoryText = char(subcategoryList(ith_subcategory,:));
+
+        % Break the subcategory text into parts
+        % Example: thisLineOfText = 'one, two , three';
+        cellArrayOfParts = strsplit(thisCategoryText, ',');          % keeps spaces
+        cellArrayOfPartsNoLeadTrailSpaces = strtrim(cellArrayOfParts);  % remove leading/trailing spaces in each cell
+        % result: {'one' 'two' 'three'}
+
+        % Make sure right number of parts
+        if size(cellArrayOfPartsNoLeadTrailSpaces,2)~=Nparts
+            error('Subcategory encountered in:\n\t%s\nthat is missing required details (%.0f parts expected): \n\t%s', thisTextFile, Nparts, thisCategoryText);
+        end
+
+        % Grab name
+        subCategoryName = cellArrayOfPartsNoLeadTrailSpaces{1};
+        if flagCheckIsVarName && ~isvarname(subCategoryName)
+            error('Subcategory name encountered in file:\n\t%s \nthat is not a valid MATLAB variable name:\n\t%s',thisTextFile, subCategoryName);
+        end
+
+        % Grab color
+        subCategoryColorString = cellArrayOfPartsNoLeadTrailSpaces{2};
+        eval(sprintf('subCategoryColor = %s;',subCategoryColorString));
+        if size(subCategoryColor,1)~=1 || size(subCategoryColor,2)~=3
+            error('Subcategory color encountered in file:\n\t%s \nthat is not a valid 1x3 color matrix:\n\t%s',thisTextFile, subCategoryColorString);
+        end
+
+        % Grab size
+        subCategorySizeString = cellArrayOfPartsNoLeadTrailSpaces{3};
+        eval(sprintf('subCategorySize = %s;',subCategorySizeString));
+        if size(subCategorySize,1)~=1 || size(subCategorySize,2)~=1
+            error('Subcategory size encountered in file:\n\t%s \nthat is not a valid 1x1 scalar:\n\t%s',thisTextFile, subCategorySizeString);
+        end
+
+        % Grab isRequired
+        subCategoryIsRequiredString = cellArrayOfPartsNoLeadTrailSpaces{4};
+        eval(sprintf('subCategoryIsRequired = %s;',subCategoryIsRequiredString));
+        if size(subCategoryIsRequired,1)~=1 || size(subCategoryIsRequired,2)~=1
+            error('Subcategory isRequired encountered in file:\n\t%s \nthat is not a valid 1x1 scalar:\n\t%s',thisTextFile, subCategoryIsRequiredString);
+        end
+
+        thisSubcategories{ith_subcategory,1} = subCategoryName;
+        thisSubcategories{ith_subcategory,2} = subCategoryColor;
+        thisSubcategories{ith_subcategory,3} = subCategorySize;
+        thisSubcategories{ith_subcategory,4} = subCategoryIsRequired;
+        thisSubcategories{ith_subcategory,5} = rand(3,2);
+    end
+
+    % Save the name
+    thisCategoryWithExtension = extractAfter(thisFileName,'Categories_');
+    thisCategoryName = thisCategoryWithExtension(1:end-4);
+    categoryStructure{ith_category,1} = thisCategoryName;  % Char array representing categories
+
+    % Save the subcategories
+    categoryStructure{ith_category,2} = thisSubcategories; % Cell array of subcategories
+
+
+end
+end % Ends fcn_INTERNAL_fillCategoryStructureFromFiles
+
 %% fcn_INTERNAL_fillCategoryDataFromFiles
 function categoryData = fcn_INTERNAL_fillCategoryDataFromFiles
 categoryFiles = dir(fullfile(pwd,'Data','Categories_*.txt'));
@@ -812,3 +967,61 @@ end
 tempUserData.flagIsVisible = true;
 set(h_subcategory,'UserData',tempUserData);
 end % Ends fcn_INTERNAL_createNamedSubplot
+
+%% Function sort cell array
+% PROMPT: given 2 cell arrays, one with an array of sorted strings, another
+% with an array of arbitrary strings where some of the arbitrary strings
+% are in the sorted string list, write a function that outputs a resorted
+% version of arbitrary strings where the sort order of the arbitrary
+% strings matches the sorted string cell array listing for all the strings
+% that match, and the strings that do not match are simply appended to the
+% sorted list
+%
+% sorted = {'alpha','beta','gamma'};
+% arbitrary = {'x','beta','alpha','beta','z','delta','gamma','alpha'};
+% 
+% out = resortBySortedList(sorted, arbitrary)
+% % out =
+% %   1×8 cell array
+% %     {'alpha'} {'alpha'} {'beta'} {'beta'} {'gamma'} {'x'} {'z'} {'delta'}
+
+function out = resortBySortedList(sorted, arbitrary)
+% resortBySortedList  Reorder arbitrary cell array to follow sorted order.
+%   out = resortBySortedList(sorted, arbitrary)
+%   Inputs:
+%     sorted    - 1xN or Nx1 cell array of character vectors (desired order)
+%     arbitrary - 1xM or Mx1 cell array of character vectors (items to reorder)
+%   Output:
+%     out       - cell array with elements of 'arbitrary' re-ordered so that
+%                 any strings appearing in 'sorted' appear in that order.
+%                 Strings in 'arbitrary' that are not in 'sorted' are appended
+%                 in their original order.
+
+% Ensure column cell arrays for consistent processing
+sorted = reshape(sorted,[],1);
+arbitrary = reshape(arbitrary,[],1);
+
+% Mark which arbitrary entries have been used
+used = false(size(arbitrary));
+
+outCells = {};
+
+% For each key in sorted, append matching arbitrary items in their original order
+for k = 1:numel(sorted)
+    if isempty(sorted{k})
+        continue
+    end
+    matches = strcmp(arbitrary, sorted{k});
+    if any(matches)
+        outCells = [outCells; arbitrary(matches)]; %#ok<AGROW>
+        used = used | matches;
+    end
+end
+
+% Append any leftover arbitrary items that didn't match sorted (preserve order)
+if any(~used)
+    outCells = [outCells; arbitrary(~used)];
+end
+
+out = reshape(outCells, [], 1); % return row cell array (like typical lists)
+end

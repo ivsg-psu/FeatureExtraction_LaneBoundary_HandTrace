@@ -1,0 +1,26 @@
+% This is a list of all the implied stripes. 
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0 
+% The subcategory names should NOT contain any spaces
+ImpliedStripes_SingleSolid, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SingleDashed, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SingleDotted, 0.5*[1 1 1], 5, 0
+ImpliedStripes_DoubleSolidLeftSide, 0.5*[1 1 1], 5, 0
+ImpliedStripes_DoubleSolidRightSide, 0.5*[1 1 1], 5, 0 
+ImpliedStripes_DoubleDashedLeftSide, 0.5*[1 1 1], 5, 0
+ImpliedStripes_DoubleDashedRightSide, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SolidParkingMarkLeftAndRight, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SolidParkingMarkLeft, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SolidParkingMarkRight, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SolidParkingAisleCap, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SolidParkingHeadInBoundary, 0.5*[1 1 1], 5, 0
+ImpliedStripes_ZigZag, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SolidHorizontal, 0.5*[1 1 1], 5, 0
+ImpliedStripes_DashedHorizontal, 0.5*[1 1 1], 5, 0
+ImpliedStripes_StripedLines, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SpeedBumpMarking, 0.5*[1 1 1], 5, 0
+ImpliedStripes_SpeedHumpMarking, 0.5*[1 1 1], 5, 0
+ImpliedStripes_BoxJunctionCrissCross, 0.5*[1 1 1], 5, 0
+ImpliedStripes_TrafficIslandInfill, 0.5*[1 1 1], 5, 0
+ImpliedStripes_Curb, 0.5*[1 1 1], 5, 0
+ImpliedStripes_CartCorral, 0.5*[1 1 1], 5, 0
