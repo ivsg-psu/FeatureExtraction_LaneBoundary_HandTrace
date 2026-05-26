@@ -85,13 +85,13 @@ txt = [
 	"AABBs, 0.5*[1 1 1], 5, required, patch" % Axis-aligned bounding box - these define the area that is being marked
 	"AABBs_LocalRegions, 0.5*[1 1 1], 5, notRequired, patch"  % Local region is the area in which definitions are valid within this file
 	"AABBs_LocalRegions_Test, 0.5*[1 1 1], 5, notRequired, patch"  % Local region is the area in which definitions are valid within this file
-	"Regions"
-	"Networks"
-	"Objects"
-	"Stripes"
-	"Surfaces"
-	"Zones"
-	"Signs"
+	"Regions, 0.5*[1 1 1], 5, notRequired, patch"
+	"Networks, 0.5*[1 1 1], 5, notRequired, patch"
+	"Objects, 0.5*[1 1 1], 5, notRequired, patch"
+	"Stripes, 0.5*[1 1 1], 5, notRequired, patch"
+	"Surfaces, 0.5*[1 1 1], 5, notRequired, patch"
+	"Zones, 0.5*[1 1 1], 5, notRequired, patch"
+	"Signs, 0.5*[1 1 1], 5, notRequired, patch"
 ];
 
 fname = "menu_def.txt";
