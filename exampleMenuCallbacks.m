@@ -1,9 +1,9 @@
 function exampleMenuCallbacks()
     % Create a figure
-    f = figure('Name','Menu Callbacks Example');
+    figHandle = figure('Name','Menu Callbacks Example');
 
     % Top-level menu (uses named function handle)
-    mFile = uimenu(f, 'Text', 'File');
+    mFile = uimenu(figHandle, 'Text', 'File');
     mOpen = uimenu(mFile, 'Text', 'Open...', ...
                    'MenuSelectedFcn', @onOpenSelected);
 
@@ -19,7 +19,7 @@ function exampleMenuCallbacks()
 
     % Example state variable toggled by a menu
     showInfo = true;
-    mView = uimenu(f, 'Text', 'View');
+    mView = uimenu(figHandle, 'Text', 'View');
     mToggle = uimenu(mView, 'Text', 'Show Info', ...
                      'Checked', 'on', ...
                      'MenuSelectedFcn', @toggleShowInfo);

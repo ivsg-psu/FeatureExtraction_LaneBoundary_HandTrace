@@ -111,9 +111,23 @@ for i = 1:numel(lines)
 end
 end
 
+%% fcn_INTERNAL_addMenuInfo
 function [childHandle, outputStruct] = fcn_INTERNAL_addMenuInfo(parentHandle, parentStruct, childText, childColor, childSize, childIsRequiredString, childDrawingType)
 childHandle = uimenu(parentHandle, 'Text', childText);
 set(childHandle,'ForegroundColor',childColor);
+
+% Add toggle buttons
+handleShowOnFig = uimenu(childHandle, 'Text', 'Show on Figure', ...
+    'Checked', 'on', ...
+    'MenuSelectedFcn', @toggleShowInfo);
+
+mToggle = uimenu(childHandle, 'Text', 'Edit', ...
+    'Checked', 'on', ...
+    'MenuSelectedFcn', @toggleShowInfo);
+
+mToggle = uimenu(childHandle, 'Text', 'Show Examples', ...
+    'Checked', 'on', ...
+    'MenuSelectedFcn', @toggleShowInfo);
 
 outputStruct = parentStruct;
 outputStruct.(childText).selfColor = childColor;
@@ -121,4 +135,25 @@ outputStruct.(childText).selfSize = childSize;
 outputStruct.(childText).selfIsRequiredFlag = strcmpi(childIsRequiredString,'required');
 outputStruct.(childText).selfDrawingType = childDrawingType;
 outputStruct.(childText).selfIsVisible = outputStruct.(childText).selfIsRequiredFlag;
+outputStruct.(childText).selfHandle = childHandle;
+outputStruct.(childText).selfHandleShowOnFig = handleShowOnFig;
+
+disp('done');
+end % Ends fcn_INTERNAL_addMenuInfo
+
+%%
+function toggleShowInfo(src, ~)
+% Toggle the Checked property and the local state
+if strcmp(src.Checked, 'on')
+    src.Checked = 'off';
+    showInfo = false;
+else
+    src.Checked = 'on';
+    showInfo = true;
+end
+
+% For debugging:
+if 1==0
+    disp(['Show Info is now: ', string(showInfo)]);
+end
 end
