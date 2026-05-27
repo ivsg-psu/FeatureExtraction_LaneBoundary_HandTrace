@@ -64,8 +64,8 @@ fname = "menu_def.txt";
 writelines(txt, fname);
 
 % Create a figure and build menus from the file
-f = figure('Name', 'Menu Example');
-fcn_HandTrace_createMenusFromFile(fname, f);
+figHandle = figure('Name', 'Menu Example');
+fcn_HandTrace_createMenusFromFile(fname, figHandle);
 
 % Clean up (optional)
 delete(fname)
@@ -486,8 +486,11 @@ fname = "menu_def.txt";
 writelines(txt, fname);
 
 % Create a figure and build menus from the file
-f = figure('Name', 'Menu Example');
-fcn_HandTrace_createMenusFromFile(fname, f);
+figHandle = figure('Name', 'Menu Example');
+fcn_plotRoad_plotLL([],[],(figHandle));
+set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
+	
+fcn_HandTrace_createMenusFromFile(fname, figHandle);
 
 % Clean up (optional)
 delete(fname)
