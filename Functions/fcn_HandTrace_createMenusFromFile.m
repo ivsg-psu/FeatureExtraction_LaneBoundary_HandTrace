@@ -58,13 +58,8 @@ for i = 1:numel(lines)
 		case 1  % top-level menu
 			parentKey = char(menuParts(1));
 			if ~isKey(mainMap, parentKey)
-				[mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType);
-				% mainMap(key) = uimenu(figHandle, 'Text', key);
-				% set(mainMap(key),'ForegroundColor',defaultColor);
-				% menuStruct.(key).defaultColor = defaultColor;
-				% menuStruct.(key).defaultSize = defaultSize;
-				% menuStruct.(key).isRequiredFlag = strcmpi(isRequiredString,'required');
-				% menuStruct.(key).drawingType = drawingType;				
+				flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
+				[mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist);	
 			end
 
 		case 2  % submenu under top-level
@@ -73,13 +68,15 @@ for i = 1:numel(lines)
 
 			% Ensure parent exists
 			if ~isKey(mainMap, parentKey)
-				[mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType);
+				flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
+				[mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist);
 			end
 			parentHandle = mainMap(parentKey);
 			
 			childMapKey = [parentKey '_' childKey];
 			if ~isKey(subMap, childMapKey)
-				[subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType);
+				flagSubmenusExist = any(contains(lines,cat(2,childMapKey,'_')));
+				[subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist);
 			end
 
 		case 3  % sub-submenu (grandchild)
@@ -89,20 +86,23 @@ for i = 1:numel(lines)
 
 			% Ensure parent exists
 			if ~isKey(mainMap, parentKey)
-				[mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType);
+				flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
+				[mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist);
 			end
 			parentHandle = mainMap(parentKey);
 
 			% Ensure child exists (as submenu)
 			childMapKey = [parentKey '_' childKey];
 			if ~isKey(subMap, childMapKey)
-				[subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType);
+				flagSubmenusExist = any(contains(lines,cat(2,childMapKey,'_')));
+				[subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist);
 			end
 			childHandle = subMap(childMapKey);
 
 			% Create grandchild under child
 			% uimenu(childHandle, 'Text', grandKey);
-			[~, menuStruct.(parentKey).(childKey)] = fcn_INTERNAL_addMenuInfo(childHandle, menuStruct.(parentKey).(childKey), grandKey, defaultColor, defaultSize, isRequiredString, drawingType);
+			flagSubmenusExist = false;
+			[~, menuStruct.(parentKey).(childKey)] = fcn_INTERNAL_addMenuInfo(childHandle, menuStruct.(parentKey).(childKey), grandKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist);
 
 		otherwise
 			% Ignore deeper levels or malformed lines
@@ -112,22 +112,29 @@ end
 end
 
 %% fcn_INTERNAL_addMenuInfo
-function [childHandle, outputStruct] = fcn_INTERNAL_addMenuInfo(parentHandle, parentStruct, childText, childColor, childSize, childIsRequiredString, childDrawingType)
+function [childHandle, outputStruct] = fcn_INTERNAL_addMenuInfo(parentHandle, parentStruct, childText, childColor, childSize, childIsRequiredString, childDrawingType, flagSubmenusExist)
 childHandle = uimenu(parentHandle, 'Text', childText);
 set(childHandle,'ForegroundColor',childColor);
 
-% Add toggle buttons
-handleShowOnFig = uimenu(childHandle, 'Text', 'Show on Figure', ...
-    'Checked', 'on', ...
-    'MenuSelectedFcn', @toggleShowInfo);
+if flagSubmenusExist
+	% Add toggle buttons
+	handleShowOnFig = uimenu(childHandle, 'Text', 'Show Category', ...
+		'Checked', 'on', ...
+		'MenuSelectedFcn', @toggleShowInfo);
+else
+	% Add toggle buttons
+	handleShowOnFig = uimenu(childHandle, 'Text', 'Show on Figure', ...
+		'Checked', 'on', ...
+		'MenuSelectedFcn', @toggleShowInfo);
 
-mToggle = uimenu(childHandle, 'Text', 'Edit', ...
-    'Checked', 'on', ...
-    'MenuSelectedFcn', @toggleShowInfo);
+	mToggle = uimenu(childHandle, 'Text', 'Edit', ...
+		'Checked', 'on', ...
+		'MenuSelectedFcn', @toggleShowInfo);
 
-mToggle = uimenu(childHandle, 'Text', 'Show Examples', ...
-    'Checked', 'on', ...
-    'MenuSelectedFcn', @toggleShowInfo);
+	mToggle = uimenu(childHandle, 'Text', 'Show Examples', ...
+		'Checked', 'on', ...
+		'MenuSelectedFcn', @toggleShowInfo);
+end
 
 outputStruct = parentStruct;
 outputStruct.(childText).selfColor = childColor;
@@ -138,7 +145,6 @@ outputStruct.(childText).selfIsVisible = outputStruct.(childText).selfIsRequired
 outputStruct.(childText).selfHandle = childHandle;
 outputStruct.(childText).selfHandleShowOnFig = handleShowOnFig;
 
-disp('done');
 end % Ends fcn_INTERNAL_addMenuInfo
 
 %%
