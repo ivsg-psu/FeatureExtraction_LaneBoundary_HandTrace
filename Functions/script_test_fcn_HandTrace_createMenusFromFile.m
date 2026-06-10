@@ -84,6 +84,34 @@ figure(figNum); clf;
 txt = [
 	"AABBs, 0.5*[1 1 1], 5, notRequired, aabb" % Axis-aligned bounding box - these define the area that is being marked
 	"AABBs_LocalRegion, 0.5*[1 1 1], 5, notRequired, aabb"  % Local region is the area in which definitions are valid within this file
+];
+
+fname = "menu_def.txt";
+writelines(txt, fname);
+
+% Create a figure and build menus from the file
+figHandle = figure('Name', 'Menu Example');
+fcn_plotRoad_plotLL([],[],(figHandle));
+set(gca,'MapCenter',[40.793695059681355 -77.864213807810174],'ZoomLevel',20);
+	
+fcn_HandTrace_createMenusFromFile(fname, figHandle);
+
+% Clean up (optional)
+delete(fname)
+
+%% DEMO case: advanced example
+figNum = 10003;
+titleString = sprintf('DEMO case: advanced example for Hand Trace');
+fprintf(1,'Figure %.0f: %s\n',figNum, titleString);
+figure(figNum); clf;
+
+% Format:
+% subcategoryName, defaultColorAs1x3, defaultSize, required (anything else is NOT required), patch or segment or points
+% subcategoryName, defaultColorAs1x3, defaultSize, isRequiredAs1or0, isRoot0orisAABB1orIsPatch2orisLine3
+% Create a temporary file with menu definitions
+txt = [
+	"AABBs, 0.5*[1 1 1], 5, notRequired, aabb" % Axis-aligned bounding box - these define the area that is being marked
+	"AABBs_LocalRegion, 0.5*[1 1 1], 5, notRequired, aabb"  % Local region is the area in which definitions are valid within this file
 
     "Regions_Paved_PrimaryRoad, 0.5*[1 1 1], 5, notRequired, patch"
     "Regions_Paved_ShoulderOfRoad, 0.5*[1 1 1], 5, notRequired, patch"
@@ -494,7 +522,6 @@ fcn_HandTrace_createMenusFromFile(fname, figHandle);
 
 % Clean up (optional)
 delete(fname)
-
 
 
 %% Test cases start here. These are very simple, usually trivial

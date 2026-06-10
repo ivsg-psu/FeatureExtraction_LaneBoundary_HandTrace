@@ -119,10 +119,18 @@ end
 % Save results
 set(figHandle,'UserData',menuStruct);
 
+% Draw results
+fcn_INTERNAL_drawDataOntoPlot(figHandle, [], [])
+
 end
 
 %% fcn_INTERNAL_addMenuInfo
-function [childHandle, outputStruct] = fcn_INTERNAL_addMenuInfo(parentHandle, parentStruct, childText, childColor, childSize, childIsRequiredString, childDrawingType, flagSubmenusExist, fullKey)
+function [childHandle, outputStruct] = fcn_INTERNAL_addMenuInfo(...
+    parentHandle, parentStruct, ...
+    childText, childColor, childSize, childIsRequiredString, childDrawingType, ...
+    flagSubmenusExist, fullKey)
+
+
 childHandle = uimenu(parentHandle, 'Text', childText);
 set(childHandle,'ForegroundColor',childColor);
 
@@ -137,14 +145,11 @@ else
 		'Checked', 'on', ...
 		'MenuSelectedFcn', @toggleShowInfo);
 
-	mToggle = uimenu(childHandle, 'Text', 'Edit', ...
+	handleEdit = uimenu(childHandle, 'Text', 'Edit', ...
 		'Callback', @(src,event) fcn_INTERNAL_updateData(src, event, fullKey));
 
-
-
-	mToggle = uimenu(childHandle, 'Text', 'Show Examples', ...
-		'Checked', 'on', ...
-		'MenuSelectedFcn', @toggleShowInfo);
+	handleShowExamples = uimenu(childHandle, 'Text', 'Show Examples', ...
+		'Callback', @(src,event) fcn_INTERNAL_showExamples(src, event, fullKey));
 end
 
 outputStruct = parentStruct;
@@ -155,6 +160,10 @@ outputStruct.(childText).selfDrawingType = childDrawingType;
 outputStruct.(childText).selfIsVisible = outputStruct.(childText).selfIsRequiredFlag;
 outputStruct.(childText).selfHandle = childHandle;
 outputStruct.(childText).selfHandleShowOnFig = handleShowOnFig;
+if ~flagSubmenusExist
+    outputStruct.(childText).selfHandleEdit = handleEdit;
+    outputStruct.(childText).selfHandleShowExamples = handleShowExamples;
+end
 outputStruct.(childText).selfData = [];
 
 end % Ends fcn_INTERNAL_addMenuInfo
@@ -177,7 +186,64 @@ end
 end
 
 %% fcn_INTERNAL_updateData
-function  fcn_INTERNAL_updateData(src, event, fullKey) %#ok<INUSD>
+function  fcn_INTERNAL_updateData(src, event, fullKey) 
+
+% Updates data being shown on a given menu. Saves the results into the
+% 'UserData' area of the current figure, as a structure.
+
+% Get the parent figure. This is done by recursively going "up" each parent
+% until a figure type handle is found.
+p = get(src,'Parent');
+while ~isempty(p) && ~isgraphics(p,'figure')
+	p = get(p,'Parent');
+end
+figHandle = p; % empty if no figure found
+
+
+% Grab the structure that contains all the menus, and drill down into the
+% structure to the specific substructure that is calling this function.
+% Once in that substructure, grab the data.
+menuStruct = get(figHandle,'UserData');
+parts = strsplit(fullKey, '.');
+subStructure = getfield(menuStruct, parts{:});   
+inputType = subStructure.selfDrawingType;
+startingXY = subStructure.selfData;
+
+% Grab the current properties of the figure, so that we can open up a new
+% one with the same properties
+hAxes = gca;
+flag_isGeoPlot = isa(hAxes,'matlab.graphics.axis.GeographicAxes');
+if ~flag_isGeoPlot
+    error('Expecting a geoplot - exiting');
+end
+
+% Get the current figure's location information
+currentMapCenter = get(gca,'MapCenter');
+currentZoomLevel = get(gca,'ZoomLevel');
+
+% Open up a new figure
+tempFigHandle = figure;
+fcn_plotRoad_plotLL([],[],(tempFigHandle));
+set(gca,'MapCenter',currentMapCenter,'ZoomLevel',currentZoomLevel);
+
+% Grab results from user
+newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(tempFigHandle),(inputType));
+
+% Save results into structure and into the figure
+newSubStructure = subStructure;
+newSubStructure.selfData = newSelfData;
+newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
+set(figHandle,'UserData',newMenuStruct);
+
+% Redraw
+fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey)
+
+end
+
+%% fcn_INTERNAL_showExamples
+function  fcn_INTERNAL_showExamples(src, event, fullKey) %#ok<INUSD>
+
+% Shows examples for a given menu choice
 
 % Get the parent figure
 p = get(src,'Parent');
@@ -199,4 +265,141 @@ newSubStructure.selfData = newSelfData;
 newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
 
 set(figHandle,'UserData',newMenuStruct);
+end
+
+
+%% fcn_INTERNAL_drawDataOntoPlot
+function fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey) %#ok<INUSD>
+
+% Plots all the menus and submenu data
+
+% Get the parent figure
+p = get(src,'Parent');
+while ~isempty(p) && ~isgraphics(p,'figure')
+	p = get(p,'Parent');
+end
+figHandle = p; % empty if no figure found
+
+menuStruct = get(figHandle,'UserData');
+[nodes, ~] = fcn_INTERNAL_structHierarchy(menuStruct, 'menuStruct');
+
+
+% Loop through all the entries, from bottom to top, shutting off visibility
+% for ones that are not checked
+numStructures = size(nodes,1);
+flagsShowMenuData = true(numStructures,1);
+
+for ith_struct = numStructures:-1:1
+    thisNode = nodes{ith_struct};
+    if ~contains(thisNode,'self')
+        parts = strsplit(thisNode, '.');
+
+        % Is this substructure NOT the root?
+        if length(parts)>1
+            subStructure = getfield(menuStruct, parts{2:end});
+            % Is visibility a field that is set?
+            if isfield(subStructure,'selfIsVisible')
+                if ~subStructure.selfIsVisible
+                    % Set all values to false 
+                    flagsShowMenuData(contains(nodes,thisNode)) = false;
+                end
+            end
+        end
+    end
+end
+
+% Now, loop through all the structures and plot each
+for ith_struct = numStructures:-1:1
+    thisNode = nodes{ith_struct};
+    if ~contains(thisNode,'self')
+        parts = strsplit(thisNode, '.');
+
+        % Is this substructure NOT the root?
+        if length(parts)>1
+            subStructure = getfield(menuStruct, parts{2:end});
+            % Is visibility a field that is set?
+            if isfield(subStructure,'selfIsVisible')
+                if ~subStructure.selfIsVisible
+                    % Set all values to false 
+                    flagsShowMenuData(contains(nodes,thisNode)) = false;
+                end
+            end
+        end
+    end
+end
+
+end % Ends fcn_INTERNAL_drawDataOntoPlot
+
+
+
+
+%% fcn_INTERNAL_structHierarchy
+function [nodes, edges] = fcn_INTERNAL_structHierarchy(s, rootName)
+% structHierarchy  List parent/child relationships for nested structures.
+%   [NODES, EDGES] = fcn_INTERNAL_structHierarchy(S) returns all node paths and edges.
+%   [NODES, EDGES] = fcn_INTERNAL_structHierarchy(S, ROOTNAME) uses ROOTNAME as top path.
+%
+%   Node path examples:
+%     'mystruct'                     (scalar struct)
+%     'mystruct.field'               (field)
+%     'mystruct(2).field.subfield'   (struct array element)
+%
+%   EDGES is Mx2 cell array: {parentPath, childPath}.
+%
+% EXAMPLE USAGE:
+% s(1).a.x = 1;
+% s(1).a.y = struct('m',10);
+% s(2).a.x = 2;
+% s(2).b = struct('z',3);
+% [nodes, edges] = fcn_INTERNAL_structHierarchy(s, 's')
+%
+% Interpretation tips:
+% 
+% nodes lists every visited path.
+% edges lists direct parent → child relationships; children may themselves be parents for deeper levels.
+% To get children of a given parent, find rows in edges where first column equals that parent.
+% To get parents of a node, find rows in edges where second column equals that node.
+
+
+if nargin < 2 || isempty(rootName)
+    rootName = 'root';
+end
+
+nodes = {}; edges = {};
+visited = containers.Map(); % to avoid duplicate nodes if same path revisited
+
+recurse(rootName, s);
+
+    function recurse(path, val)
+        % record node
+        if ~isKey(visited, path)
+            visited(path) = true;
+            nodes{end+1,1} = path; 
+        end
+        % only structures can have children
+        if ~isstruct(val)
+            return
+        end
+        % iterate over elements of struct array
+        for k = 1:numel(val)
+            idx = '';
+            if numel(val) > 1
+                idx = sprintf('(%d)', k);
+            end
+            % for each field
+            fn = fieldnames(val);
+            for f = 1:numel(fn)
+                childPath = sprintf('%s%s.%s', path, idx, fn{f});
+                % record edge parent -> child
+                edges(end+1,:) = {path, childPath}; %#ok<AGROW>
+                % recurse into field value
+                try
+                    fldVal = val(k).(fn{f});
+                catch
+                    fldVal = []; % safe fallback
+                end
+                recurse(childPath, fldVal);
+            end
+        end
+    end
 end
