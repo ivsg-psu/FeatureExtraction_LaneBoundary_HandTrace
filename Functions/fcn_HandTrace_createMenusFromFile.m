@@ -165,6 +165,8 @@ if ~flagSubmenusExist
     outputStruct.(childText).selfHandleShowExamples = handleShowExamples;
 end
 outputStruct.(childText).selfData = [];
+outputStruct.(childText).selfDataFlagDataHasChanged = 1;
+outputStruct.(childText).selfDataHandleToDataPlot = [];
 
 end % Ends fcn_INTERNAL_addMenuInfo
 
@@ -201,8 +203,8 @@ figHandle = p; % empty if no figure found
 
 
 % Grab the structure that contains all the menus, and drill down into the
-% structure to the specific substructure that is calling this function.
-% Once in that substructure, grab the data.
+% structure to find the specific substructure that is calling this
+% function. Once in that substructure, grab the data.
 menuStruct = get(figHandle,'UserData');
 parts = strsplit(fullKey, '.');
 subStructure = getfield(menuStruct, parts{:});   
@@ -232,8 +234,7 @@ newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(tempFigHandle)
 % Save results into structure and into the figure
 newSubStructure = subStructure;
 newSubStructure.selfData = newSelfData;
-newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
-set(figHandle,'UserData',newMenuStruct);
+fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
 % Redraw
 fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey)
@@ -243,28 +244,35 @@ end
 %% fcn_INTERNAL_showExamples
 function  fcn_INTERNAL_showExamples(src, event, fullKey) %#ok<INUSD>
 
-% Shows examples for a given menu choice
-
-% Get the parent figure
-p = get(src,'Parent');
-while ~isempty(p) && ~isgraphics(p,'figure')
-	p = get(p,'Parent');
-end
-figHandle = p; % empty if no figure found
-
-menuStruct = get(figHandle,'UserData');
-parts = strsplit(fullKey, '.');
-subStructure = getfield(menuStruct, parts{:});   
-inputType = subStructure.selfDrawingType;
-startingXY = subStructure.selfData;
-
-newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(figHandle),(inputType));
-newSubStructure = subStructure;
-newSubStructure.selfData = newSelfData;
-
-newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
-
-set(figHandle,'UserData',newMenuStruct);
+% % Shows examples for a given menu choice
+% 
+% % Get the parent figure
+% p = get(src,'Parent');
+% while ~isempty(p) && ~isgraphics(p,'figure')
+% 	p = get(p,'Parent');
+% end
+% figHandle = p; % empty if no figure found
+% 
+% menuStruct = get(figHandle,'UserData');
+% parts = strsplit(fullKey, '.');
+% subStructure = getfield(menuStruct, parts{:});   
+% inputType = subStructure.selfDrawingType;
+% startingXY = subStructure.selfData;
+% 
+% % Save changes back into the figure
+% 
+% % Query changes from user
+% newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(figHandle),(inputType));
+% 
+% % Create a new substructure based on this one
+% newSubStructure = subStructure;
+% newSubStructure.selfData = newSelfData;
+% 
+% % Save the new substructure into the figure data
+% newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
+% 
+% % Push the new figure data back into the figure
+% set(figHandle,'UserData',newMenuStruct);
 end
 
 
@@ -317,12 +325,44 @@ for ith_struct = numStructures:-1:1
         % Is this substructure NOT the root?
         if length(parts)>1
             subStructure = getfield(menuStruct, parts{2:end});
-            % Is visibility a field that is set?
-            if isfield(subStructure,'selfIsVisible')
-                if ~subStructure.selfIsVisible
-                    % Set all values to false 
-                    flagsShowMenuData(contains(nodes,thisNode)) = false;
-                end
+            % Is this menu plotted?
+            if flagsShowMenuData(ith_struct,1)
+
+				flagUpdatePlot = false;
+				% Does this item need to be updated?
+				if isfield(subStructure,'selfDataFlagDataHasChanged') 
+					if subStructure.selfDataFlagDataHasChanged
+						flagUpdatePlot = true;
+					end
+				else
+					flagUpdatePlot = true;
+				end
+
+				if flagUpdatePlot
+					% Grab the data to plot
+					pathXY = subStructure.selfData;
+
+					% Grab the input type
+					inputType = subStructure.selfDrawingType;
+
+					% Grab the handle for this data previously plotted
+					hPoints = subStructure.selfDataHandleToDataPlot;
+
+					% Update the plot with the new data
+					hPoints = fcn_GetUserInputPath_updateDrawing(pathXY, (inputType), (hPoints), (figHandle));
+
+					% Update the handle to the plotted data
+					subStructure.selfDataHandleToDataPlot = hPoints;
+
+					% Update the flag so it isn't replotted until another
+					% change
+					subStructure.selfDataFlagDataHasChanged = 0;
+
+					% Save results into the figure data
+					newSubStructure = subStructure;
+					newSubStructure.selfData = newSelfData;
+					fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
+				end
             end
         end
     end
@@ -403,3 +443,17 @@ recurse(rootName, s);
         end
     end
 end
+
+%% fcn_INTERNAL_saveDataIntoFigure
+function fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
+% Saves changes to a subStructure back into the figure
+
+% Grab the existing data
+menuStruct = get(figHandle,'UserData');
+
+% Save the new substructure into the figure data
+newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
+
+% Push the new figure data back into the figure
+set(figHandle,'UserData',newMenuStruct);
+end % Ends fcn_INTERNAL_saveDataIntoFigure

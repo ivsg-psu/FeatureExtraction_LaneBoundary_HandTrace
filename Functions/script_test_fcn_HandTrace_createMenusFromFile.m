@@ -10,9 +10,14 @@
 % As: script_test_fcn_HandTrace_createMenusFromFile
 %
 % 2026_05_15 by Sean Brennan, sbrennan@psu.edu
-% - wrote the code originally using fcn_GetUserInputPath_getUserInputPath
+% - Wrote the code originally using fcn_GetUserInputPath_getUserInputPath
 %   % as a starter
 %
+%
+% 2026_06_10 by Sean Brennan, sbrennan@psu.edu
+% - In script_test_fcn_HandTrace_createMenusFromFile
+%   % * Added complex test cases that match real usage
+%   % * Added simple test cases that match real usage
 
 
 % TO-DO:

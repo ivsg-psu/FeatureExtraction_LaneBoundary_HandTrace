@@ -23,6 +23,11 @@
 % 
 % 2026_04_21 by Sean Brennan, sbrennan@psu.edu
 % - Small updates to repo
+% 
+% 2026_06_12 by Sean Brennan, sbrennan@psu.edu
+% - Added automatic menu loading
+
+
 
 % TO-DO:
 %
