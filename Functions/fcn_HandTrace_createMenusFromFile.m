@@ -157,7 +157,7 @@ outputStruct.(childText).selfColor = childColor;
 outputStruct.(childText).selfSize = childSize;
 outputStruct.(childText).selfIsRequiredFlag = strcmpi(childIsRequiredString,'required');
 outputStruct.(childText).selfDrawingType = childDrawingType;
-outputStruct.(childText).selfIsVisible = outputStruct.(childText).selfIsRequiredFlag;
+outputStruct.(childText).selfIsVisible = true; % outputStruct.(childText).selfIsRequiredFlag;
 outputStruct.(childText).selfHandle = childHandle;
 outputStruct.(childText).selfHandleShowOnFig = handleShowOnFig;
 if ~flagSubmenusExist
@@ -181,10 +181,50 @@ else
     showInfo = true;
 end
 
+% %%%%%%%%%%%%%%%%%%%%%%
+% % If the toggle is of a parent, make sure the children inheret the same
+% % toggle
+% 
+% % Get the figure handle
+% figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
+% 
+% 
+% 
+% [nodes, ~] = fcn_INTERNAL_structHierarchy(menuStruct, 'menuStruct');
+% 
+% % Loop through all the entries, from bottom to top, shutting off visibility
+% % for ones that are not checked
+% numStructures = size(nodes,1);
+% flagsShowMenuData = true(numStructures,1);
+% 
+% for ith_struct = numStructures:-1:1
+%     thisNode = nodes{ith_struct};
+%     if ~contains(thisNode,'self')
+%         parts = strsplit(thisNode, '.');
+% 
+%         % Is this substructure NOT the root?
+%         if length(parts)>1
+%             subStructure = getfield(menuStruct, parts{2:end});
+%             % Is visibility a field that is set?
+%             if isfield(subStructure,'selfIsVisible')
+%                 if ~subStructure.selfIsVisible
+%                     % Set all values to false 
+%                     flagsShowMenuData(contains(nodes,thisNode)) = false;
+%                 end
+%             end
+%         end
+%     end
+% end
+
+
+
 % For debugging:
-if 1==0
+if 1==1
     disp(['Show Info is now: ', string(showInfo)]);
 end
+
+% Redraw the plot
+fcn_INTERNAL_drawDataOntoPlot(src, [], [])
 end
 
 %% fcn_INTERNAL_updateData
@@ -193,13 +233,8 @@ function  fcn_INTERNAL_updateData(src, event, fullKey)
 % Updates data being shown on a given menu. Saves the results into the
 % 'UserData' area of the current figure, as a structure.
 
-% Get the parent figure. This is done by recursively going "up" each parent
-% until a figure type handle is found.
-p = get(src,'Parent');
-while ~isempty(p) && ~isgraphics(p,'figure')
-	p = get(p,'Parent');
-end
-figHandle = p; % empty if no figure found
+% Get the figure handle
+figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
 
 
 % Grab the structure that contains all the menus, and drill down into the
@@ -236,7 +271,7 @@ newSubStructure = subStructure;
 newSubStructure.selfData = newSelfData;
 fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
-% Redraw
+% Redraw the plot
 fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey)
 
 end
@@ -246,12 +281,8 @@ function  fcn_INTERNAL_showExamples(src, event, fullKey) %#ok<INUSD>
 
 % % Shows examples for a given menu choice
 % 
-% % Get the parent figure
-% p = get(src,'Parent');
-% while ~isempty(p) && ~isgraphics(p,'figure')
-% 	p = get(p,'Parent');
-% end
-% figHandle = p; % empty if no figure found
+% % Get the figure handle
+% figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
 % 
 % menuStruct = get(figHandle,'UserData');
 % parts = strsplit(fullKey, '.');
@@ -281,12 +312,8 @@ function fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey) %#ok<INUSD>
 
 % Plots all the menus and submenu data
 
-% Get the parent figure
-p = get(src,'Parent');
-while ~isempty(p) && ~isgraphics(p,'figure')
-	p = get(p,'Parent');
-end
-figHandle = p; % empty if no figure found
+% Get the figure handle
+figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
 
 menuStruct = get(figHandle,'UserData');
 [nodes, ~] = fcn_INTERNAL_structHierarchy(menuStruct, 'menuStruct');
@@ -322,23 +349,14 @@ for ith_struct = numStructures:-1:1
     if ~contains(thisNode,'self')
         parts = strsplit(thisNode, '.');
 
-        % Is this substructure NOT the root?
+        % Is this substructure something to be plotted, for example NOT the root?
         if length(parts)>1
             subStructure = getfield(menuStruct, parts{2:end});
+
             % Is this menu plotted?
-            if flagsShowMenuData(ith_struct,1)
+            if flagsShowMenuData(ith_struct,1) && isfield(subStructure,'selfDataFlagDataHasChanged')
 
-				flagUpdatePlot = false;
-				% Does this item need to be updated?
-				if isfield(subStructure,'selfDataFlagDataHasChanged') 
-					if subStructure.selfDataFlagDataHasChanged
-						flagUpdatePlot = true;
-					end
-				else
-					flagUpdatePlot = true;
-				end
-
-				if flagUpdatePlot
+				if subStructure.selfDataFlagDataHasChanged
 					% Grab the data to plot
 					pathXY = subStructure.selfData;
 
@@ -360,7 +378,6 @@ for ith_struct = numStructures:-1:1
 
 					% Save results into the figure data
 					newSubStructure = subStructure;
-					newSubStructure.selfData = newSelfData;
 					fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 				end
             end
@@ -457,3 +474,20 @@ newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
 % Push the new figure data back into the figure
 set(figHandle,'UserData',newMenuStruct);
 end % Ends fcn_INTERNAL_saveDataIntoFigure
+
+%% fcn_INTERNAL_getFigHandleFromSource
+function figHandle = fcn_INTERNAL_getFigHandleFromSource(src)
+% Gets the handle figure. This is done by recursively going "up" each
+% parent until a figure type handle is found.
+
+p = src;
+if ~isgraphics(p,'figure')
+    p = get(src,'Parent');
+    while ~isempty(p) && ~isgraphics(p,'figure')
+    	p = get(p,'Parent');
+    end
+end
+
+figHandle = p; % empty if no figure found
+
+end % Ends fcn_INTERNAL_getFigHandleFromSource
