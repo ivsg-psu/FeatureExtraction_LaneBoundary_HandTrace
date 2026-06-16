@@ -1,2 +1,0 @@
-AABBs, 0.5*[1 1 1], 5, notRequired, aabb
-AABBs_LocalRegion, 0.5*[1 1 1], 5, notRequired, aabb

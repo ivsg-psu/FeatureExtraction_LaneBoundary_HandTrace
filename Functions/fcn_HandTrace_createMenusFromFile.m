@@ -136,13 +136,11 @@ set(childHandle,'ForegroundColor',childColor);
 
 if flagSubmenusExist
 	% Add toggle buttons
-	handleShowOnFig = uimenu(childHandle, 'Text', 'Show Category', ...
-		'Checked', 'on', ...
+	handleShowOnFig = uimenu(childHandle, 'Text', 'Show Category', ...  % 		% 'Checked', 'on', ...
 		'MenuSelectedFcn', @toggleShowInfo);
 else
 	% Add toggle buttons
-	handleShowOnFig = uimenu(childHandle, 'Text', 'Show on Figure', ...
-		'Checked', 'on', ...
+	handleShowOnFig = uimenu(childHandle, 'Text', 'Show on Figure', ... % 		'Checked', 'on', ...
 		'MenuSelectedFcn', @toggleShowInfo);
 
 	handleEdit = uimenu(childHandle, 'Text', 'Edit', ...
@@ -173,13 +171,22 @@ end % Ends fcn_INTERNAL_addMenuInfo
 %%
 function toggleShowInfo(src, ~)
 % Toggle the Checked property and the local state
-if strcmp(src.Checked, 'on')
-    src.Checked = 'off';
-    showInfo = false;
+% if strcmp(src.Checked, 'on')
+%     src.Checked = 'off';
+%     showInfo = false;
+% else
+%     src.Checked = 'on';
+%     showInfo = true;
+% end
+oldNameString = src.Text;
+if strcmp(oldNameString, 'Show')
+	newNameString = replace(oldNameString,'Show','Hide');
+	showInfo = true;
 else
-    src.Checked = 'on';
-    showInfo = true;
+	newNameString = replace(oldNameString,'Hide','Show');
+	showInfo = false;
 end
+set(src,'Text',newNameString);
 
 % %%%%%%%%%%%%%%%%%%%%%%
 % % If the toggle is of a parent, make sure the children inheret the same
