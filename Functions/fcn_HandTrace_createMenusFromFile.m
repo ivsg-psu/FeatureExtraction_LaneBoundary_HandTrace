@@ -137,11 +137,11 @@ set(childHandle,'ForegroundColor',childColor);
 if flagSubmenusExist
 	% Add toggle buttons
 	handleShowOnFig = uimenu(childHandle, 'Text', 'Show Category', ...  % 		% 'Checked', 'on', ...
-		'MenuSelectedFcn', @toggleShowInfo);
+		'MenuSelectedFcn', @toggleShowInfo, 'UserData', fullKey);
 else
 	% Add toggle buttons
 	handleShowOnFig = uimenu(childHandle, 'Text', 'Show on Figure', ... % 		'Checked', 'on', ...
-		'MenuSelectedFcn', @toggleShowInfo);
+		'MenuSelectedFcn', @toggleShowInfo, 'UserData', fullKey);
 
 	handleEdit = uimenu(childHandle, 'Text', 'Edit', ...
 		'Callback', @(src,event) fcn_INTERNAL_updateData(src, event, fullKey));
@@ -179,7 +179,7 @@ function toggleShowInfo(src, ~)
 %     showInfo = true;
 % end
 oldNameString = src.Text;
-if strcmp(oldNameString, 'Show')
+if contains(oldNameString, 'Show')
 	newNameString = replace(oldNameString,'Show','Hide');
 	showInfo = true;
 else
@@ -229,6 +229,22 @@ set(src,'Text',newNameString);
 if 1==1
     disp(['Show Info is now: ', string(showInfo)]);
 end
+
+% Get the figure handle
+figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
+
+% Save results into the figure data
+thisNode = get(src,'UserData');
+parts = strsplit(thisNode, '.');
+menuStruct = get(figHandle,'UserData');
+if strcmp(parts{1},'menuStruct')
+	subStructure = getfield(menuStruct, parts{2:end});
+else
+	subStructure = getfield(menuStruct, parts{1:end}); 
+end
+newSubStructure = subStructure;
+newSubStructure.selfIsVisible = showInfo;
+fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
 % Redraw the plot
 fcn_INTERNAL_drawDataOntoPlot(src, [], [])
@@ -474,6 +490,16 @@ function fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
 % Grab the existing data
 menuStruct = get(figHandle,'UserData');
+
+% Make sure to avoid nesting menuStruct into itself
+if strcmp(parts{1},'menuStruct') 
+	if length(parts)>1
+		tempParts = parts(1,2:end);
+	else
+		error('Expected a menu structure more than 1 menu deep.');		
+	end
+	parts = tempParts;
+end
 
 % Save the new substructure into the figure data
 newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
