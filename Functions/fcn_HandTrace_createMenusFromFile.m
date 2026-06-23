@@ -155,7 +155,7 @@ outputStruct.(childText).selfColor = childColor;
 outputStruct.(childText).selfSize = childSize;
 outputStruct.(childText).selfIsRequiredFlag = strcmpi(childIsRequiredString,'required');
 outputStruct.(childText).selfDrawingType = childDrawingType;
-outputStruct.(childText).selfIsVisible = true; % outputStruct.(childText).selfIsRequiredFlag;
+outputStruct.(childText).selfIsVisible = outputStruct.(childText).selfIsRequiredFlag;
 outputStruct.(childText).selfHandle = childHandle;
 outputStruct.(childText).selfHandleShowOnFig = handleShowOnFig;
 if ~flagSubmenusExist
@@ -168,7 +168,7 @@ outputStruct.(childText).selfDataHandleToDataPlot = [];
 
 end % Ends fcn_INTERNAL_addMenuInfo
 
-%%
+%% toggleShowInfo
 function toggleShowInfo(src, ~)
 % Toggle the Checked property and the local state
 % if strcmp(src.Checked, 'on')
@@ -178,6 +178,20 @@ function toggleShowInfo(src, ~)
 %     src.Checked = 'on';
 %     showInfo = true;
 % end
+
+
+% oldNameString = src.Text;
+% if contains(oldNameString, 'Show')
+% 	newNameString = replace(oldNameString,'Show','Hide');
+% 	showInfo = true;
+% else
+% 	newNameString = replace(oldNameString,'Hide','Show');
+% 	showInfo = false;
+% end
+% set(src,'Text',newNameString);
+
+URHERE - need to somehow set the menu to redraw if toggle is set. Suggest updating the menu during the redraw event, not here. Should only set a flag that this needs to be updated.
+
 oldNameString = src.Text;
 if contains(oldNameString, 'Show')
 	newNameString = replace(oldNameString,'Show','Hide');
@@ -187,6 +201,7 @@ else
 	showInfo = false;
 end
 set(src,'Text',newNameString);
+
 
 % %%%%%%%%%%%%%%%%%%%%%%
 % % If the toggle is of a parent, make sure the children inheret the same
@@ -248,7 +263,7 @@ fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
 % Redraw the plot
 fcn_INTERNAL_drawDataOntoPlot(src, [], [])
-end
+end % Ends toggleShowInfo
 
 %% fcn_INTERNAL_updateData
 function  fcn_INTERNAL_updateData(src, event, fullKey) 
@@ -291,6 +306,9 @@ newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(tempFigHandle)
 
 % Save results into structure and into the figure
 newSubStructure = subStructure;
+
+% Make sure changes are visible
+newSubStructure.selfIsVisible = true;
 newSubStructure.selfData = newSelfData;
 fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
@@ -362,6 +380,18 @@ for ith_struct = numStructures:-1:1
                     flagsShowMenuData(contains(nodes,thisNode)) = false;
                 end
             end
+
+            URHERE
+            oldNameString = src.Text;
+            if contains(oldNameString, 'Show')
+            	newNameString = replace(oldNameString,'Show','Hide');
+            	showInfo = true;
+            else
+            	newNameString = replace(oldNameString,'Hide','Show');
+            	showInfo = false;
+            end
+            set(src,'Text',newNameString);
+
         end
     end
 end
