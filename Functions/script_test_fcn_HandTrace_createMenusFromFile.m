@@ -89,7 +89,8 @@ figure(figNum); clf;
 txt = [
 	"AABBs, 0.5*[1 1 1], 5, notRequired, aabb" % Axis-aligned bounding box - these define the area that is being marked
 	"AABBs_LocalRegion, 0.5*[1 1 1], 5, notRequired, aabb"  % Local region is the area in which definitions are valid within this file
-];
+	"AABBs_DummyRegion, 0.5*[1 1 1], 5, notRequired, aabb"  % Local region is the area in which definitions are valid within this file
+	];
 
 fname = "menu_def.txt";
 writelines(txt, fname);

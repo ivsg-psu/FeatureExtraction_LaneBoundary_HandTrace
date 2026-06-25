@@ -166,9 +166,12 @@ if ~flagSubmenusExist
     outputStruct.(childText).selfHandleEdit = handleEdit;
     outputStruct.(childText).selfHandleShowExamples = handleShowExamples;
 end
-outputStruct.(childText).selfData = [];
-outputStruct.(childText).selfDataFlagDataHasChanged = 1;
-outputStruct.(childText).selfDataHandleToDataPlot = [];
+outputStruct.(childText).selfData = [nan nan];
+outputStruct.(childText).selfDataFlagDataHasChanged = false;
+
+% Create an empty plot
+figHandle = fcn_INTERNAL_getFigHandleFromSource(parentHandle);
+outputStruct.(childText).selfDataHandleToDataPlot = fcn_plotRoad_plotLL([nan nan],[],figHandle);
 
 end % Ends fcn_INTERNAL_addMenuInfo
 
@@ -183,69 +186,11 @@ function toggleShowInfo(src, ~)
 %     showInfo = true;
 % end
 
-
-% oldNameString = src.Text;
-% if contains(oldNameString, 'Show')
-% 	newNameString = replace(oldNameString,'Show','Hide');
-% 	showInfo = true;
-% else
-% 	newNameString = replace(oldNameString,'Hide','Show');
-% 	showInfo = false;
-% end
-% set(src,'Text',newNameString);
-
-% URHERE - need to somehow set the menu to redraw if toggle is set. Suggest updating the menu during the redraw event, not here. Should only set a flag that this needs to be updated.
-
-oldNameString = src.Text;
-if contains(oldNameString, 'Show')
-    newNameString = replace(oldNameString,'Show','Hide');
-    flagShowInfo = true;
-else
-    newNameString = replace(oldNameString,'Hide','Show');
-    flagShowInfo = false;
-end
-set(src,'Text',newNameString);
-
-
-% %%%%%%%%%%%%%%%%%%%%%%
-% % If the toggle is of a parent, make sure the children inheret the same
-% % toggle
-%
-% % Get the figure handle
-% figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
-%
-%
-%
-% [nodes, ~] = fcn_INTERNAL_structHierarchy(menuStruct, 'menuStruct');
-%
-% % Loop through all the entries, from bottom to top, shutting off visibility
-% % for ones that are not checked
-% numStructures = size(nodes,1);
-% flagsShowMenuData = true(numStructures,1);
-%
-% for ith_struct = numStructures:-1:1
-%     thisNode = nodes{ith_struct};
-%     if ~contains(thisNode,'self')
-%         parts = strsplit(thisNode, '.');
-%
-%         % Is this substructure NOT the root?
-%         if length(parts)>1
-%             subStructure = getfield(menuStruct, parts{2:end});
-%             % Is visibility a field that is set?
-%             if isfield(subStructure,'selfIsVisible')
-%                 if ~subStructure.selfIsVisible
-%                     % Set all values to false
-%                     flagsShowMenuData(contains(nodes,thisNode)) = false;
-%                 end
-%             end
-%         end
-%     end
-% end
-
-
+% Change the menu text
+flagShowInfo = fcn_INTERNAL_flipMenuText(src);
 
 % For debugging:
-if 1==1
+if 1==0
     disp(['Show Info is now: ', string(flagShowInfo)]);
 end
 
@@ -259,24 +204,20 @@ menuStruct = get(figHandle,'UserData');
 if strcmp(parts{1},'menuStruct')
     subStructure = getfield(menuStruct, parts{2:end});
 else
-    subStructure = getfield(menuStruct, parts{1:end});
+	subStructure = getfield(menuStruct, parts{1:end});
 end
 
-% Turn on all substructure menus
-if flagShowInfo
-    fields = fieldnames(subStructure);
-    for ith_field = 1:length(fields)
-        thisFieldString = fields{ith_field};
-        if isstruct(subStructure.(thisFieldString))
-            subSubStructure = subStructure.(thisFieldString);
-            if isfield(subSubStructure,'selfHandle')
-                thisSelfHandle = subSubStructure.selfHandle;
-                set(thisSelfHandle,'Visible','on');
-            end
-        end
-    end
-end
+% Turn on or off this structure
+subStructure = fcn_INTERNAL_showOrHideStructure(subStructure,flagShowInfo, true);	
 
+% Turn on all substructure menus and plots
+fields = fieldnames(subStructure);
+for ith_field = 1:length(fields)
+	thisFieldString = fields{ith_field};
+	if isstruct(subStructure.(thisFieldString))
+		subStructure.(thisFieldString) = fcn_INTERNAL_showOrHideStructure(subStructure.(thisFieldString),flagShowInfo, false);		
+	end
+end
 
 newSubStructure = subStructure;
 newSubStructure.selfIsVisible = flagShowInfo;
@@ -285,6 +226,71 @@ fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 % Redraw the plot
 fcn_INTERNAL_drawDataOntoPlot(src, [], [])
 end % Ends toggleShowInfo
+
+
+%% fcn_INTERNAL_flipMenuText
+function flagShowInfo = fcn_INTERNAL_flipMenuText(src)
+oldNameString = src.Text;
+if contains(oldNameString, 'Show')
+    newNameString = replace(oldNameString,'Show','Hide');
+    flagShowInfo = true;
+else
+    newNameString = replace(oldNameString,'Hide','Show');
+    flagShowInfo = false;
+end
+set(src,'Text',newNameString);
+end % Ends fcn_INTERNAL_flipMenuText
+
+%% fcn_INTERNAL_showOrHideStructure
+function thisStructure = fcn_INTERNAL_showOrHideStructure(thisStructure,flagShowInfo, flagThisIsMainMenu)
+if flagShowInfo
+	if ~flagThisIsMainMenu
+		% Turn the menu on
+		if isfield(thisStructure,'selfHandle')
+			thisSelfHandle = thisStructure.selfHandle;
+			set(thisSelfHandle,'Visible','on');
+		end
+
+		% Mark the flag that it is now visible
+		if isfield(thisStructure,'selfIsVisible')
+			thisStructure.selfIsVisible = true;
+		end
+	end
+
+	% Turn on the plot
+	if isfield(thisStructure,'selfDataHandleToDataPlot')
+		set(thisStructure.selfDataHandleToDataPlot,'Visible','on');
+	end
+
+	% Mark that the plot has updated
+	if isfield(thisStructure,'selfDataFlagDataHasChanged')
+		thisStructure.selfDataFlagDataHasChanged = true;
+	end
+else
+	if ~flagThisIsMainMenu
+
+		% Turn the menu off
+		if isfield(thisStructure,'selfHandle')
+			thisSelfHandle = thisStructure.selfHandle;
+			set(thisSelfHandle,'Visible','off');
+		end
+
+		% Mark the flag that it is now NOT visible
+		if isfield(thisStructure,'selfIsVisible')
+			thisStructure.selfIsVisible = false;
+		end
+	end
+	% Turn off the plot
+	if isfield(thisStructure,'selfDataHandleToDataPlot')
+		set(thisStructure.selfDataHandleToDataPlot,'Visible','off');
+	end
+
+	% Mark that the plot has updated
+	if isfield(thisStructure,'selfDataFlagDataHasChanged')
+		thisStructure.selfDataFlagDataHasChanged = true;
+	end
+end
+end % Ends fcn_INTERNAL_showOrHideStructure
 
 %% fcn_INTERNAL_updateData
 function  fcn_INTERNAL_updateData(src, event, fullKey)
@@ -325,14 +331,27 @@ set(gca,'MapCenter',currentMapCenter,'ZoomLevel',currentZoomLevel);
 % Grab results from user
 newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(tempFigHandle),(inputType));
 
+
+
 % Save results into structure and into the figure
 newSubStructure = subStructure;
 
 % Make sure changes are visible
 newSubStructure.selfIsVisible = true;
 
+newPlotHandle = fcn_GetUserInputPath_updateDrawing(newSelfData, (inputType), (newSubStructure.selfDataHandleToDataPlot), (figHandle));
+newSubStructure.selfDataHandleToDataPlot = newPlotHandle;
+set(newSubStructure.selfDataHandleToDataPlot,'Visible','on')
+% set(newSubStructure.selfDataHandleToDataPlot,'LatitudeData',newSelfData(:,1));
+% set(newSubStructure.selfDataHandleToDataPlot,'LongitudeData',newSelfData(:,2));
+set(newSubStructure.selfDataHandleToDataPlot,'Color',newSubStructure.selfColor);
+set(newSubStructure.selfDataHandleToDataPlot,'LineWidth',newSubStructure.selfSize);
 newSubStructure.selfDataFlagDataHasChanged = true;
 
+% Change the menu
+flagShowInfo = fcn_INTERNAL_flipMenuText(src.Parent.Children(3));
+
+% Save results back into figure
 newSubStructure.selfData = newSelfData;
 fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
