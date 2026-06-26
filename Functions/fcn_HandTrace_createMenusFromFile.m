@@ -20,107 +20,36 @@ function fcn_HandTrace_createMenusFromFile(filename, figHandle)
 % Create a simple example showing the usage including at least 3 menus, 1
 % submenu, and 1 sub-sub menu.
 
+
+% Create the "Data" menu options (Save, Load)
+dataHandle = uimenu(figHandle, 'Text', 'Data');
+% set(dataHandle,'ForegroundColor',childColor);
+
+% Add save option
+handleSaveData = uimenu(dataHandle, 'Text', 'Save Data', ...  % 		% 'Checked', 'on', ...
+	'MenuSelectedFcn', @fcn_INTERNAL_fileSave); %#ok<NASGU>
+
+% Add load option
+handleLoadData = uimenu(dataHandle, 'Text', 'Load Data', ...  % 		% 'Checked', 'on', ...
+	'MenuSelectedFcn', @fcn_INTERNAL_fileLoad); %#ok<NASGU>
+
+
 % Read all lines as a string array
 lines = readlines(filename);
 lines = strtrim(lines);              % trim whitespace
 lines = lines(~(lines == ""));       % remove empty lines
 
-% Maps to store handles:
-% mainMap('Label') = uimenu handle
-% subMap('Parent_Child') = uimenu handle (child)
+% Populate the menu options
+menuStruct = fcn_INTERNAL_createMenusFromLines(figHandle, lines);
 
-mainMap = containers.Map('KeyType','char','ValueType','any');
-subMap  = containers.Map('KeyType','char','ValueType','any');
+% Save the lines, in case we save/load the data later
+menuStruct.selfLines = lines;
 
-menuStruct = struct;
-
-for i = 1:numel(lines)
-    line = lines(i);
-    lineParts = split(line,',');
-    if size(lineParts,1)~=5
-        error('Expected 5 elements in each line definition of a menu item');
-    end
-
-    % Break line parts into meaningful strings
-    % Format:
-    % menuName, defaultColorAs1x3, defaultSize, required (anything else is NOT required), patch or segment or points
-
-    menuName = strtrim(char(lineParts(1)));
-    defaultColor = eval(lineParts(2));
-    defaultSize = eval(lineParts(3));
-    isRequiredString = strtrim(char(lineParts(4)));
-    drawingType = strtrim(char(lineParts(5)));
-
-    menuParts = split(menuName, "_");       % split on underscore
-    np = numel(menuParts);
-
-    switch np
-        case 1  % top-level menu
-            parentKey = char(menuParts(1));
-            if ~isKey(mainMap, parentKey)
-                flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
-                fullKey = parentKey;
-                [mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
-            end
-
-        case 2  % submenu under top-level
-            parentKey = char(menuParts(1));
-            childKey  = char(menuParts(2));
-
-            % Ensure parent exists
-            if ~isKey(mainMap, parentKey)
-                flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
-                fullKey = parentKey;
-                [mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
-            end
-            parentHandle = mainMap(parentKey);
-
-            childMapKey = [parentKey '_' childKey];
-            if ~isKey(subMap, childMapKey)
-                flagSubmenusExist = any(contains(lines,cat(2,childMapKey,'_')));
-                fullKey = cat(2,parentKey,'.',childKey);
-                [subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
-            end
-
-        case 3  % sub-submenu (grandchild)
-            parentKey = char(menuParts(1));
-            childKey  = char(menuParts(2));
-            grandKey  = char(menuParts(3));
-
-            % Ensure parent exists
-            if ~isKey(mainMap, parentKey)
-                flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
-                fullKey = parentKey;
-                [mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
-            end
-            parentHandle = mainMap(parentKey);
-
-            % Ensure child exists (as submenu)
-            childMapKey = [parentKey '_' childKey];
-            if ~isKey(subMap, childMapKey)
-                flagSubmenusExist = any(contains(lines,cat(2,childMapKey,'_')));
-                fullKey = cat(2,parentKey,'.',childKey);
-                [subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
-            end
-            childHandle = subMap(childMapKey);
-
-            % Create grandchild under child
-            % uimenu(childHandle, 'Text', grandKey);
-            flagSubmenusExist = false;
-            fullKey = cat(2,parentKey,'.',childKey,'.',grandKey);
-            [~, menuStruct.(parentKey).(childKey)] = fcn_INTERNAL_addMenuInfo(childHandle, menuStruct.(parentKey).(childKey), grandKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
-
-        otherwise
-            % Ignore deeper levels or malformed lines
-            warning('Ignoring line with %d parts: %s', np, line);
-    end
-end
-
-% Save results
+% Save results into the figure for function call-backs
 set(figHandle,'UserData',menuStruct);
 
 % Draw results
-fcn_INTERNAL_drawDataOntoPlot(figHandle, [], [])
+fcn_INTERNAL_drawDataOntoPlot(figHandle, [], [], false)
 
 end
 
@@ -224,7 +153,7 @@ newSubStructure.selfIsVisible = flagShowInfo;
 fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
 % Redraw the plot
-fcn_INTERNAL_drawDataOntoPlot(src, [], [])
+fcn_INTERNAL_drawDataOntoPlot(src, [], [], false)
 end % Ends toggleShowInfo
 
 
@@ -356,7 +285,7 @@ newSubStructure.selfData = newSelfData;
 fcn_INTERNAL_saveDataIntoFigure(figHandle, newSubStructure, parts)
 
 % Redraw the plot
-fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey)
+fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey, false)
 
 end
 
@@ -392,9 +321,11 @@ end
 
 
 %% fcn_INTERNAL_drawDataOntoPlot
-function fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey) %#ok<INUSD>
+function fcn_INTERNAL_drawDataOntoPlot(src, event, fullKey, flagForcePlot) %#ok<INUSD>
 
 % Plots all the menus and submenu data
+% Setting flagForcePlot to true forces everything to be redrawn
+
 
 % Get the figure handle
 figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
@@ -408,25 +339,27 @@ menuStruct = get(figHandle,'UserData');
 numStructures = size(nodes,1);
 flagsShowMenuData = true(numStructures,1);
 
+
 for ith_struct = numStructures:-1:1
-    thisNode = nodes{ith_struct};
-    if ~contains(thisNode,'self')
-        parts = strsplit(thisNode, '.');
+	thisNode = nodes{ith_struct};
+	if ~contains(thisNode,'self')
+		parts = strsplit(thisNode, '.');
 
-        % Is this substructure NOT the root?
-        if length(parts)>1
-            subStructure = getfield(menuStruct, parts{2:end});
-            % Is visibility a field that is set?
-            if isfield(subStructure,'selfIsVisible')
-                if ~subStructure.selfIsVisible
-                    % Set all values to false
-                    flagsShowMenuData(contains(nodes,thisNode)) = false;
-                end
-            end
+		% Is this substructure NOT the root?
+		if length(parts)>1
+			subStructure = getfield(menuStruct, parts{2:end});
+			% Is visibility a field that is set?
+			if isfield(subStructure,'selfIsVisible')
+				if ~subStructure.selfIsVisible
+					% Set all values to false
+					flagsShowMenuData(contains(nodes,thisNode)) = false;
+				end
+			end
 
-        end
-    end
+		end
+	end
 end
+
 
 % Now, loop through all the structures and plot each
 for ith_struct = numStructures:-1:1
@@ -439,18 +372,19 @@ for ith_struct = numStructures:-1:1
             subStructure = getfield(menuStruct, parts{2:end});
 
             % Is this menu item changed since last time?
-            if isfield(subStructure,'selfDataFlagDataHasChanged') && subStructure.selfDataFlagDataHasChanged
+            if flagForcePlot || (isfield(subStructure,'selfDataFlagDataHasChanged') && subStructure.selfDataFlagDataHasChanged)
                 % Grab the handle to the data plot, if it exists
                 if isfield(subStructure,'selfDataHandleToDataPlot') && ~isempty(subStructure.selfDataHandleToDataPlot)
                     plotHandle = subStructure.selfDataHandleToDataPlot;
-
+                                                                                                                                          
                     % Change the visibility of the plot
                     if flagsShowMenuData(ith_struct,1)
-                        set(plotHandle,'Visible','on');
+                        set(plotHandle,'Visible','on');						
                     else
                         set(plotHandle,'Visible','off');
                     end
                     
+
                     % Update the flag so it isn't replotted until another
                     % change
                     subStructure.selfDataFlagDataHasChanged = 0;
@@ -580,3 +514,484 @@ end
 figHandle = p; % empty if no figure found
 
 end % Ends fcn_INTERNAL_getFigHandleFromSource
+
+%% fcn_INTERNAL_fileSave
+function fcn_INTERNAL_fileSave(src, ~)
+% Saves data from the current figure to a file
+
+% Get the figure handle. To do this, pull the data out of the figure
+figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
+
+% Grab data from the current figure
+menuStruct = get(figHandle,'UserData');
+
+% Show a simple menu
+choice = menu('Do you want to save the data?', 'Save', 'Cancel');
+
+% Get the axis location
+hAxis = gca;
+LatLimits = get(hAxis,'LatitudeLimits');
+LonLimits = get(hAxis,'LongitudeLimits');
+ZoomLevel = get(hAxis,'ZoomLevel');
+
+AABB = [...
+	min(LatLimits) min(LonLimits);
+	max(LatLimits) min(LonLimits);
+	max(LatLimits) max(LonLimits);
+	min(LatLimits) max(LonLimits);
+	min(LatLimits) min(LonLimits);
+	];
+stringZoomLevel = sprintf('%.3f',ZoomLevel);
+
+if choice == 1
+    % Default folder and filename (adjust as needed)
+    defaultFolder = fullfile(pwd, 'Data'); % Default save folder
+    defaultName = fcn_INTERNAL_makeBBoxFilename(AABB(:,1), AABB(:,2), stringZoomLevel, 'mat');
+    defaultFull = fullfile(defaultFolder, defaultName);
+
+	% Make sure file name is valid
+	[isValid, reason] = fcn_INTERNAL_isValidWindowsFilename(defaultName, 'CheckPath',true, 'BasePath',defaultFolder);
+	if ~isValid
+		error('Unable to use filename: %s because: %s',defaultFull,reason);
+	end
+
+    % Show Save dialog with default location/name
+    [file, path] = uiputfile(defaultFull, 'Save MAT file as');
+
+    if isequal(file, 0) || isequal(path, 0)
+        disp('User canceled save.');
+    else
+        save(fullfile(path, file), 'menuStruct'); % specify variables to save
+        fprintf('Saved to %s\n', fullfile(path, file));
+    end
+else
+    disp('Save canceled via menu.');
+end
+
+end % Ends fcn_INTERNAL_fileSave
+
+
+%% fcn_INTERNAL_makeBBoxFilename
+function filename = fcn_INTERNAL_makeBBoxFilename(lat, lon, stringZoomLevel, extension)
+% MAKEBBOXFILENAME Generates a positive-only bounding box filename using N/S/E/W suffixes.
+%
+% EXAMPLE:
+% latData = [40.3521, 40.4015, 40.3750];
+% lonData = [-79.9142, -79.8511, -79.8890];
+% 
+% bBoxFile = fcn_INTERNAL_makeBBoxFilename(latData, lonData, 'geojson');
+% disp(bBoxFile); 
+% % Outputs: "40.3521N_79.9142W_40.4015N_79.8511W.geojson"
+%
+% No Negative Signs: The code uses abs() to convert all numbers to absolute
+% positive values.Readable: A human or a script can instantly tell exactly
+% what quadrant of the Earth the data belongs to without guessing if a
+% positive number was originally a negative.Cross-Platform Safe: Letters
+% and underscores are completely safe on Windows, Mac, and Linux systems.
+
+% 1. Extract the extreme bounding box limits
+ymin = min(lat); % Southernmost
+xmin = min(lon); % Westernmost
+ymax = max(lat); % Northernmost
+xmax = max(lon); % Easternmost
+
+% 2. Helper function to format an individual coordinate with its direction
+formatLat = @(v) sprintf('%.8f%s', abs(v), char(sprintf('%s', fnc_INTERNAL_ternary(v >= 0, 'N', 'S'))));
+formatLon = @(v) sprintf('%.8f%s', abs(v), char(sprintf('%s', fnc_INTERNAL_ternary(v >= 0, 'E', 'W'))));
+
+% 3. Clean up the extension formatting
+if ~startsWith(extension, '.')
+	extension = ['.' extension];
+end
+
+% 4. Build the final filename
+filename = sprintf('%s_%s_%s_%s_%s%s', ...
+	formatLat(ymin), formatLon(xmin), formatLat(ymax), formatLon(xmax), stringZoomLevel, extension);
+end % Ends fcn_INTERNAL_makeBBoxFilename
+
+%% fnc_INTERNAL_ternary
+function out = fnc_INTERNAL_ternary(condition, trueVal, falseVal)
+% Inline helper function to mimic standard ternary operators
+if condition, out = trueVal; else, out = falseVal; end
+end % Ends fnc_INTERNAL_ternary
+
+
+%% fcn_INTERNAL_fileLoad
+function fcn_INTERNAL_fileLoad(src, ~)
+% Loads data from a file into the current figure
+
+% Get the figure handle. To do this, pull the data out of the figure
+figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
+
+% Show a simple menu
+% choice = menu('Do you want to load data? WARNING: this will delete any unsaved changes', 'Continue', 'Cancel');
+
+choice = uiconfirm(figHandle, 'Do you want to load data? WARNING: this will delete any unsaved changes', 'Confirm', ...
+                        'Options', {'Yes','Cancel'}, ...
+                        'DefaultOption', 'Yes');
+
+if strcmpi(choice,'yes')
+    % Default folder and filename (adjust as needed)
+    defaultFolder = fullfile(pwd, 'Data'); % Default save folder
+    defaultName = []; %fcn_INTERNAL_makeBBoxFilename(AABB(:,1), AABB(:,1), 'mat');
+    defaultFull = fullfile(defaultFolder, defaultName);
+
+    % Show Save dialog with default location/name
+    [file, path] = uigetfile('*.mat', 'Select a file to load',defaultFull);
+
+    if isequal(file, 0) || isequal(path, 0)
+        disp('User canceled load.');
+	else
+
+
+
+
+        % Load the data
+		load(fullfile(path, file), 'menuStruct'); % specify variables to save
+		fprintf('Loaded data from %s\n', fullfile(path, file));
+
+		% Delete old menu options and delete all existing plots
+		allChildren = get(figHandle,'Children');
+		for ith_child = 1:length(allChildren)
+			thisChildHandle = allChildren(ith_child);
+			if isgraphics(thisChildHandle, 'uimenu') && ~strcmp(thisChildHandle.Text,'Data')
+				delete(thisChildHandle);
+			elseif isa(thisChildHandle, 'matlab.graphics.axis.GeographicAxes')
+				subChildren = get(thisChildHandle,'Children');
+				for ith_child = 1:length(subChildren)
+					delete(subChildren(ith_child));
+				end
+			end
+		end
+
+		% Plot one point (empty) to force plot to remain
+		currentCenter = get(gca,'MapCenter');
+		currentZoom = get(gca,'ZoomLevel');
+		hTempPlot = fcn_plotRoad_plotLL(currentCenter,[],figHandle);
+		set(hTempPlot,'Visible','off');
+		set(gca,'ZoomLevel',currentZoom);
+
+		% Update the menu options
+		lines = menuStruct.selfLines;
+		tempStruct = fcn_INTERNAL_createMenusFromLines(figHandle, lines); 
+
+		% Copy the data plots into the new menu structure
+		allFields = fieldnames(menuStruct);
+		for ith_field = 1:length(allFields)
+			thisField = allFields{ith_field};
+			if isfield(tempStruct, thisField) && isstruct(tempStruct.(thisField))
+				% Loop through all the children
+				allSubFields = fieldnames(menuStruct.(thisField));
+				for ith_subfield = 1:length(allSubFields)
+					thisSubfield = allSubFields{ith_subfield};
+					if isstruct(menuStruct.(thisField).(thisSubfield))
+
+						tempSubStructure = menuStruct.(thisField).(thisSubfield);
+						newPlotHandle = fcn_GetUserInputPath_updateDrawing(tempSubStructure.selfData, tempSubStructure.selfDrawingType, [], (figHandle));
+						set(newPlotHandle,'Color',tempSubStructure.selfColor);
+						set(newPlotHandle,'LineWidth',tempSubStructure.selfSize);
+
+						% Update all the fields
+						tempStruct.(thisField).(thisSubfield).selfIsVisible = menuStruct.(thisField).(thisSubfield).selfIsVisible;
+						tempStruct.(thisField).(thisSubfield).selfData = menuStruct.(thisField).(thisSubfield).selfData;
+						tempStruct.(thisField).(thisSubfield).selfDataFlagDataHasChanged = true;
+						tempStruct.(thisField).(thisSubfield).selfDataHandleToDataPlot = newPlotHandle;
+					end
+				end
+			else
+				% Copy over directly
+				tempStruct.(thisField) = menuStruct.(thisField);
+			end
+		end
+
+		menuStruct = tempStruct;
+
+		% Save results
+		set(figHandle,'UserData',menuStruct);
+
+		% Draw results
+		fcn_INTERNAL_drawDataOntoPlot(figHandle, [], [], true)
+
+		% Set the display
+		[ymin, xmin, ymax, xmax, zoomLevel] = fcn_INTERNAL_parseBBoxFilename(file);
+
+		% Set display limits
+		set(gca,'MapCenter',[(ymin+ymax)/2 (xmin+xmax)/2],'ZoomLevel',zoomLevel);
+
+    end
+else
+    disp('Save canceled via menu.');
+end
+
+end % Ends fcn_INTERNAL_fileLoad
+
+%% fcn_INTERNAL_parseBBoxFilename
+function [ymin, xmin, ymax, xmax, zoomLevel] = fcn_INTERNAL_parseBBoxFilename(filename)
+% PARSEBBOXFILENAME Decodes an N/S/E/W formatted filename into numeric lat/lon coordinates.
+%
+% Output Order:
+%   ymin = South Lat, xmin = West Lon, ymax = North Lat, xmax = East Lon
+%
+% EXAMPLE:
+% % Example filename string
+% myFile = '40.3521N_79.9142W_40.4015N_79.8511W.geojson';
+% 
+% % Decode back to raw geographic numbers
+% [ymin, xmin, ymax, xmax] = fcn_INTERNAL_parseBBoxFilename(myFile);
+% 
+% % Display results
+% fprintf('Bounding Box:\n');
+% fprintf('  South (ymin): %.4f\n', ymin);
+% fprintf('  West  (xmin): %.4f\n', xmin);
+% fprintf('  North (ymax): %.4f\n', ymax);
+% fprintf('  East  (xmax): %.4f\n', xmax);
+% 
+% % Outputs:
+% % Bounding Box:
+% %   South (ymin): 40.3521
+% %   West  (xmin): -79.9142
+% %   North (ymax): 40.4015
+% %   East  (xmax): -79.8511
+%
+% Why This Method Is Robust
+% File Separation: The use of fileparts ensures
+% the code won't break if your filename still has a directory path (e.g.,
+% C:/Data/40.3521N...) or an extension attached to it.
+% 
+% Regex Protection: The regular expression tokenizes the pattern
+% dynamically, meaning it will still work perfectly even if your
+% coordinates change in precision (e.g., switching from 4 decimal places to
+% 6 decimal places later on).
+
+% 1. Strip out the file path and extension to isolate just the coordinate string
+[~, nameOnly, ~] = fileparts(filename);
+
+% 2. Parse the 4 coordinate tokens using Regular Expressions
+% Looks for: [digits and decimals] followed by [N, S, E, or W]
+tokens = regexp(nameOnly, '([\d.]+)([NSEW])', 'tokens');
+
+% Validate that we found exactly 4 coordinates
+if length(tokens) ~= 4
+	error('Filename format invalid. Expected 4 directional coordinate blocks.');
+end
+
+% 3. Extract and convert each bounding box limit
+ymin = fcn_INTERNAL_parseCoord(tokens{1}); % Southernmost Lat
+xmin = fcn_INTERNAL_parseCoord(tokens{2}); % Westernmost Lon
+ymax = fcn_INTERNAL_parseCoord(tokens{3}); % Northernmost Lat
+xmax = fcn_INTERNAL_parseCoord(tokens{4}); % Easternmost Lon
+
+% 4. Extract the Zoom level
+tokens = regexp(nameOnly, '_([\d.]+)', 'tokens');
+zoomLevel = str2double(tokens{end});
+
+end % Ends fcn_INTERNAL_parseBBoxFilename
+
+%% fcn_INTERNAL_parseCoord
+function val = fcn_INTERNAL_parseCoord(token)
+% Helper function to apply the negative multiplier based on direction
+numPart = str2double(token{1});
+direction = token{2};
+
+if strcmp(direction, 'S') || strcmp(direction, 'W')
+	val = -numPart;
+else
+	val = numPart;
+end
+end % Ends fcn_INTERNAL_parseCoord
+
+%% fcn_INTERNAL_isValidWindowsFilename
+function [isValid, reason] = fcn_INTERNAL_isValidWindowsFilename(name, varargin)
+% isValidWindowsFilename  Validate Windows filename (and optional full path)
+%   [isValid, reason] = fcn_INTERNAL_isValidWindowsFilename(name)
+%   [isValid, reason] = fcn_INTERNAL_isValidWindowsFilename(name, 'CheckPath',true, 'BasePath',C)
+%
+% Options:
+%   'CheckPath' (default false)  - if true, checks full path length against MAX_PATH
+%   'BasePath'  (default pwd)    - base folder to combine with name when checking full path
+%
+% Returns:
+%   isValid - logical
+%   reason  - empty if valid, otherwise short explanation
+%
+% USAGE EXAMPLES
+% [ok, why] = isValidWindowsFilename('myFile.txt')
+% [ok, why] = isValidWindowsFilename('CON.txt')
+% [ok, why] = isValidWindowsFilename('aVeryLongNameThatShouldntBeUsedBecauseItIsWayTooLongAndWouldCauseIssuesWhenSavingBecauseWindowsCannotHandleLongNames','.CheckPath',true,'BasePath',pwd)
+
+% Parse inputs
+p = inputParser;
+addRequired(p,'name',@ischar);
+addParameter(p,'CheckPath',false,@islogical);
+addParameter(p,'BasePath',pwd,@ischar);
+parse(p,name,varargin{:});
+name = p.Results.name;
+checkPath = p.Results.CheckPath;
+basePath = p.Results.BasePath;
+
+% Quick type/empty check
+if isempty(name)
+	isValid = false;
+	reason = 'Name is empty.';
+	return
+end
+
+% 1) Disallow path separators in name (this checks a single filename, not a path)
+if any(name==filesep) || any(name=='/') || any(name=='\')
+	isValid = false;
+	reason = 'Name contains path separators. Use only a file name, not a path.';
+	return
+end
+
+% 2) Invalid characters
+invalidChars = '<>:"/\\|?*'; % characters Windows forbids in file names
+if any(ismember(name, invalidChars))
+	isValid = false;
+	reason = sprintf('Contains invalid characters: %s', invalidChars);
+	return
+end
+
+% 3) Control characters (ASCII 0-31) not allowed
+if any(double(name) < 32)
+	isValid = false;
+	reason = 'Contains control characters (ASCII < 32).';
+	return
+end
+
+% 4) Reserved device names (CON, PRN, AUX, NUL, COM1..COM9, LPT1..LPT9)
+[~, base, ~] = fileparts(name);
+upperBase = base;
+reserved = {'CON','PRN','AUX','NUL'};
+for k=1:9, reserved{end+1} = sprintf('COM%d',k); reserved{end+1} = sprintf('LPT%d',k); end %#ok<AGROW>
+if any(strcmpi(upperBase, reserved))
+	isValid = false;
+	reason = 'Reserved device name (e.g., CON, COM1).';
+	return
+end
+
+% 5) Trailing space or dot is invalid
+if ~isempty(name) && (name(end)==' ' || name(end)=='.')
+	isValid = false;
+	reason = 'Name ends with a space or a dot.';
+	return
+end
+
+% 6) Component length (NTFS limit 255 bytes/characters)
+% Use characters as approximation; for Unicode byte-length may vary.
+maxComponentLength = 255;
+if length(name) > maxComponentLength
+	isValid = false;
+	reason = sprintf('File name component too long (>%d chars).', maxComponentLength);
+	return
+end
+
+% 7) Optional full path length check (MAX_PATH 260 historically)
+if checkPath
+	fullPath = fullfile(basePath, name);
+	% Historically Windows MAX_PATH = 260 (including null). Many systems allow longer
+	MAX_PATH = 260;
+	if length(fullPath) >= MAX_PATH
+		isValid = false;
+		reason = sprintf('Full path length >= %d characters (may exceed MAX_PATH).', MAX_PATH);
+		return
+	end
+end
+
+isValid = true;
+reason = '';
+end % Ends fcn_INTERNAL_isValidWindowsFilename
+
+
+%% fcn_INTERNAL_createMenusFromLines
+function menuStruct = fcn_INTERNAL_createMenusFromLines(figHandle, lines)
+% Maps to store handles:
+% mainMap('Label') = uimenu handle
+% subMap('Parent_Child') = uimenu handle (child)
+
+mainMap = containers.Map('KeyType','char','ValueType','any');
+subMap  = containers.Map('KeyType','char','ValueType','any');
+
+menuStruct = struct;
+
+for i = 1:numel(lines)
+    line = lines(i);
+    lineParts = split(line,',');
+    if size(lineParts,1)~=5
+        error('Expected 5 elements in each line definition of a menu item');
+    end
+
+    % Break line parts into meaningful strings
+    % Format:
+    % menuName, defaultColorAs1x3, defaultSize, required (anything else is NOT required), patch or segment or points
+
+    menuName = strtrim(char(lineParts(1)));
+    defaultColor = eval(lineParts(2));
+    defaultSize = eval(lineParts(3));
+    isRequiredString = strtrim(char(lineParts(4)));
+    drawingType = strtrim(char(lineParts(5)));
+
+    menuParts = split(menuName, "_");       % split on underscore
+    np = numel(menuParts);
+
+    switch np
+        case 1  % top-level menu
+            parentKey = char(menuParts(1));
+            if ~isKey(mainMap, parentKey)
+                flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
+                fullKey = parentKey;
+                [mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
+            end
+
+        case 2  % submenu under top-level
+            parentKey = char(menuParts(1));
+            childKey  = char(menuParts(2));
+
+            % Ensure parent exists
+            if ~isKey(mainMap, parentKey)
+                flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
+                fullKey = parentKey;
+                [mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
+            end
+            parentHandle = mainMap(parentKey);
+
+            childMapKey = [parentKey '_' childKey];
+            if ~isKey(subMap, childMapKey)
+                flagSubmenusExist = any(contains(lines,cat(2,childMapKey,'_')));
+                fullKey = cat(2,parentKey,'.',childKey);
+                [subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
+            end
+
+        case 3  % sub-submenu (grandchild)
+            parentKey = char(menuParts(1));
+            childKey  = char(menuParts(2));
+            grandKey  = char(menuParts(3));
+
+            % Ensure parent exists
+            if ~isKey(mainMap, parentKey)
+                flagSubmenusExist = any(contains(lines,cat(2,parentKey,'_')));
+                fullKey = parentKey;
+                [mainMap(parentKey), menuStruct] = fcn_INTERNAL_addMenuInfo(figHandle, menuStruct, parentKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
+            end
+            parentHandle = mainMap(parentKey);
+
+            % Ensure child exists (as submenu)
+            childMapKey = [parentKey '_' childKey];
+            if ~isKey(subMap, childMapKey)
+                flagSubmenusExist = any(contains(lines,cat(2,childMapKey,'_')));
+                fullKey = cat(2,parentKey,'.',childKey);
+                [subMap(childMapKey), menuStruct.(parentKey)] = fcn_INTERNAL_addMenuInfo(parentHandle, menuStruct.(parentKey), childKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
+            end
+            childHandle = subMap(childMapKey);
+
+            % Create grandchild under child
+            % uimenu(childHandle, 'Text', grandKey);
+            flagSubmenusExist = false;
+            fullKey = cat(2,parentKey,'.',childKey,'.',grandKey);
+            [~, menuStruct.(parentKey).(childKey)] = fcn_INTERNAL_addMenuInfo(childHandle, menuStruct.(parentKey).(childKey), grandKey, defaultColor, defaultSize, isRequiredString, drawingType, flagSubmenusExist, fullKey);
+
+        otherwise
+            % Ignore deeper levels or malformed lines
+            warning('Ignoring line with %d parts: %s', np, line);
+    end
+end
+end % Ends fcn_INTERNAL_createMenusFromLines
