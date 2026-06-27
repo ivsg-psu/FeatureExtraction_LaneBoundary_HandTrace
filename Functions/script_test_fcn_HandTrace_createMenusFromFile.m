@@ -133,6 +133,7 @@ txt = [
     
     "Nodes_EntrancesToAABB, 0.5*[0 1 0], 20, notRequired, points"
     "Nodes_ExitsFromAABB, 0.5*[1 0 0], 10, notRequired, points"
+    "Nodes_BranchingPoint, 0.5*[1 0 0], 10, notRequired, points"
     "Nodes_ParkingNodes, [0 0 0], 30, notRequired, points"
 	
 	"NetworkLinkagePaths, [0 0 1], 5, notRequired, directedPath"

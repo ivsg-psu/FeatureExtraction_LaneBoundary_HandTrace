@@ -80,7 +80,8 @@ else
         'Callback', @(src,event) fcn_INTERNAL_updateData(src, event, fullKey));
 
     handleShowExamples = uimenu(childHandle, 'Text', 'Show Examples', ...
-        'Callback', @(src,event) fcn_INTERNAL_showExamples(src, event, fullKey));
+        'Callback', @(src,event) fcn_INTERNAL_showExamples(src, event, fullKey), ...
+		'UserData',fullKey);
 end
 
 outputStruct = parentStruct;
@@ -278,7 +279,7 @@ set(newSubStructure.selfDataHandleToDataPlot,'LineWidth',newSubStructure.selfSiz
 newSubStructure.selfDataFlagDataHasChanged = true;
 
 % Change the menu
-flagShowInfo = fcn_INTERNAL_flipMenuText(src.Parent.Children(3));
+flagShowInfo = fcn_INTERNAL_flipMenuText(src.Parent.Children(3)); %#ok<NASGU>
 
 % Save results back into figure
 newSubStructure.selfData = newSelfData;
@@ -292,31 +293,14 @@ end
 %% fcn_INTERNAL_showExamples
 function  fcn_INTERNAL_showExamples(src, event, fullKey) %#ok<INUSD>
 
-% % Shows examples for a given menu choice
-%
-% % Get the figure handle
-% figHandle = fcn_INTERNAL_getFigHandleFromSource(src);
-%
-% menuStruct = get(figHandle,'UserData');
-% parts = strsplit(fullKey, '.');
-% subStructure = getfield(menuStruct, parts{:});
-% inputType = subStructure.selfDrawingType;
-% startingXY = subStructure.selfData;
-%
-% % Save changes back into the figure
-%
-% % Query changes from user
-% newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(figHandle),(inputType));
-%
-% % Create a new substructure based on this one
-% newSubStructure = subStructure;
-% newSubStructure.selfData = newSelfData;
-%
-% % Save the new substructure into the figure data
-% newMenuStruct = setfield(menuStruct,parts{:},newSubStructure);
-%
-% % Push the new figure data back into the figure
-% set(figHandle,'UserData',newMenuStruct);
+thisNode = get(src,'UserData');
+filePrefix = replace(thisNode,'.','_');
+searchString = cat(2,filePrefix,'*.jpg');
+fullSearchPath = fullfile(pwd,'Data',searchString);
+listing = dir(fullSearchPath);
+
+fcn_INTERNAL_tileImages(listing, 'MaxCols', 5, 'Title', filePrefix);
+
 end
 
 
@@ -658,8 +642,8 @@ if strcmpi(choice,'yes')
 				delete(thisChildHandle);
 			elseif isa(thisChildHandle, 'matlab.graphics.axis.GeographicAxes')
 				subChildren = get(thisChildHandle,'Children');
-				for ith_child = 1:length(subChildren)
-					delete(subChildren(ith_child));
+				for ith_subChild = 1:length(subChildren)
+					delete(subChildren(ith_subChild));
 				end
 			end
 		end
@@ -995,3 +979,126 @@ for i = 1:numel(lines)
     end
 end
 end % Ends fcn_INTERNAL_createMenusFromLines
+
+%% fcn_INTERNAL_tileImages
+function fcn_INTERNAL_tileImages(listing, varargin)
+% tileImages  Display images from a dir listing or list of filenames in a tiled view
+%
+% a compact, robust function that accepts a directory listing (the struct
+% returned by dir), or a cell/char array of filenames, reads the images,
+% and displays them in a tiled view using tiledlayout + imshow. It handles
+% full paths (dir with folder field), optional max tiles per row, and skips
+% unreadable files.
+% 
+% fcn_INTERNAL_tileImages(listing)
+% fcn_INTERNAL_tileImages(listing, 'MaxCols', 5, 'Title', 'My Images')
+%
+% listing can be:
+%  - struct array as returned by dir('*.jpg') (uses listing.name and listing.folder if present)
+%  - cell array of filenames
+%  - char vector filename (single file)
+%
+% Name-Value:
+%  'MaxCols' (positive integer, default 5)  - maximum columns per row
+%  'Title'   (char)                        - optional overall title
+%
+% Usage examples:
+% Using dir output:
+% 
+%   listing = dir('*.jpg');
+%   fcn_INTERNAL_tileImages(listing, 'MaxCols', 6, 'Title', 'Photos');
+% Using explicit file list:
+% 
+%   files = {'C:\images\a.jpg', 'C:\images\b.jpg'};
+%   fcn_INTERNAL_tileImages(files);
+
+% Parse inputs
+p = inputParser;
+addRequired(p,'listing');
+addParameter(p,'MaxCols',5,@(x)isnumeric(x)&&isscalar(x)&&x>0);
+addParameter(p,'Title','',@ischar);
+parse(p,listing,varargin{:});
+maxCols = round(p.Results.MaxCols);
+ttl = p.Results.Title;
+
+% Normalize to cell array of full file paths
+files = {};
+if isstruct(listing)
+    if isempty(listing)
+        warning('Listing is empty. Nothing to display.'); return
+    end
+    if isfield(listing,'folder')
+        for k = 1:numel(listing)
+            files{end+1} = fullfile(listing(k).folder, listing(k).name); %#ok<AGROW>
+        end
+    else
+        for k = 1:numel(listing)
+            files{end+1} = listing(k).name; %#ok<AGROW>
+        end
+    end
+elseif iscell(listing)
+    files = listing;
+elseif ischar(listing)
+    files = {listing};
+else
+    error('Unsupported listing type.');
+end
+
+% Filter out directories and non-existing files
+existsMask = cellfun(@(f) exist(f,'file')==2, files);
+if ~all(existsMask)
+    missing = files(~existsMask);
+    warning('Some files not found and will be skipped (%d):\n%s', numel(missing), strjoin(missing,', '));
+    files = files(existsMask);
+end
+if isempty(files)
+    warning('No valid image files to display.'); return
+end
+
+% Read images and record sizes; skip unreadable files
+imgs = cell(1,numel(files));
+validIdx = false(1,numel(files));
+for k = 1:numel(files)
+    try
+        imgs{k} = imread(files{k});
+        validIdx(k) = true;
+    catch
+        warning('Failed to read %s — skipping.', files{k});
+    end
+end
+imgs = imgs(validIdx);
+files = files(validIdx);
+n = numel(imgs);
+if n==0, warning('No readable images.'); return; end
+
+% Determine grid
+nCols = min(maxCols, n);
+nRows = ceil(n / nCols);
+
+% Create tiled layout and show images
+f = figure('Name','Image Tiles','NumberTitle','off'); %#ok<NASGU>
+t = tiledlayout(nRows, nCols, 'Padding','compact', 'TileSpacing','compact');
+
+for k = 1:n
+    ax = nexttile;
+    try
+        imshow(imgs{k}, 'Parent', ax);
+    catch
+        % fallback: use image + axis equal/off
+        image(ax, imgs{k});
+        axis(ax, 'image', 'off');
+    end
+    [~,nm,ext] = fileparts(files{k});
+    title(ax, [nm ext], 'Interpreter','none', 'FontSize',8);
+end
+
+% Fill remaining tiles (optional) with blank axes
+for k = n+1 : nRows*nCols
+    ax = nexttile;
+    axis(ax,'off');
+end
+
+if ~isempty(ttl)
+    title(t, ttl, 'FontWeight','bold');
+end
+end % Ends fcn_INTERNAL_tileImages
