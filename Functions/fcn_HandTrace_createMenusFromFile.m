@@ -253,13 +253,19 @@ end
 currentMapCenter = get(gca,'MapCenter');
 currentZoomLevel = get(gca,'ZoomLevel');
 
-% Open up a new figure
-tempFigHandle = figure;
-fcn_plotRoad_plotLL([],[],(tempFigHandle));
-set(gca,'MapCenter',currentMapCenter,'ZoomLevel',currentZoomLevel);
+if 1==1
+	% Grab results from user
+	newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(figHandle),(inputType));
+else
+	% Open up a new figure
+	tempFigHandle = figure;
+	fcn_plotRoad_plotLL([],[],(tempFigHandle));
+	set(gca,'MapCenter',currentMapCenter,'ZoomLevel',currentZoomLevel);
 
-% Grab results from user
-newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(tempFigHandle),(inputType));
+	% Grab results from user
+	newSelfData = fcn_GetUserInputPath_getUserInputPath((startingXY),(tempFigHandle),(inputType));
+
+end
 
 
 
